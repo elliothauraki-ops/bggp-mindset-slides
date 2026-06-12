@@ -1,0 +1,1258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BGGP Mindset — Elliot Hauraki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────────────── */
+:root {
+  --bg:         #0A0A0A;
+  --surface:    #141414;
+  --surface-2:  #1C1C1C;
+  --line:       #262626;
+  --line-soft:  #1F1F1F;
+  --gold:       #F2C14E;
+  --gold-hi:    #FFD86A;
+  --gold-lo:    #E5942A;
+  --gold-glow:  rgba(242,193,78,.14);
+  --gold-grad:  linear-gradient(45deg, #FFD86A 0%, #F2C14E 50%, #E5942A 100%);
+  --text:       #EFEAE0;
+  --soft:       #B8B2A4;
+  --muted:      #8A8477;
+  --muted-2:    #6B6558;
+  --green:      #5BC98C;
+  --red:        #E55D5D;
+  --display:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --body:       'Quicksand', 'Inter', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #050505; -webkit-font-smoothing: antialiased; }
+
+#stage {
+  position: fixed; inset: 0; display: flex;
+  align-items: center; justify-content: center; background: #050505;
+}
+#deck {
+  position: relative; background: var(--bg); overflow: hidden;
+  width: 1920px; height: 1080px; transform-origin: top left;
+}
+
+.slide {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 80px 120px; opacity: 0; pointer-events: none;
+  transition: opacity 220ms ease-out; background: var(--bg); overflow: hidden;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* ─── KICKER LINE ────────────────────────────────────────────────── */
+.kicker {
+  position: absolute; top: 44px; left: 72px;
+  font-family: var(--display); font-weight: 700; font-size: 13px;
+  letter-spacing: 3.5px; text-transform: uppercase; color: var(--gold);
+  opacity: .75;
+}
+
+/* ─── SLIDE COUNTER ──────────────────────────────────────────────── */
+#counter {
+  position: fixed; bottom: 20px; right: 28px;
+  font-family: var(--display); font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; color: var(--muted-2);
+  z-index: 100; pointer-events: none;
+}
+
+/* ─── PROGRESS BAR ───────────────────────────────────────────────── */
+#progress-track {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 3px;
+  background: var(--line-soft); z-index: 100; pointer-events: none;
+}
+#progress-fill {
+  height: 100%; background: var(--gold-grad);
+  transition: width 220ms ease-out; width: 4.76%;
+}
+
+/* ─── HINT BAR ───────────────────────────────────────────────────── */
+#hint {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: rgba(10,10,10,.92); border-bottom: 1px solid var(--line);
+  padding: 10px 24px; display: flex; align-items: center;
+  justify-content: center; gap: 24px; z-index: 200;
+  transition: opacity 300ms, transform 300ms;
+}
+#hint.gone { opacity: 0; transform: translateY(-100%); pointer-events: none; }
+.hint-key {
+  font-family: var(--display); font-size: 11px; font-weight: 600;
+  letter-spacing: 1.2px; color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.hint-key kbd {
+  display: inline-block; padding: 3px 7px; border-radius: 4px;
+  background: var(--surface); border: 1px solid var(--line);
+  color: var(--soft); font-family: var(--display); font-size: 12px;
+  font-weight: 700; letter-spacing: .5px;
+}
+
+/* ─── TYPOGRAPHY ─────────────────────────────────────────────────── */
+.display-xl {
+  font-family: var(--display); font-weight: 900;
+  font-size: 148px; letter-spacing: -4px; line-height: 1; color: var(--text);
+}
+.display-lg {
+  font-family: var(--display); font-weight: 900;
+  font-size: 96px; letter-spacing: -3px; line-height: 1.05; color: var(--text);
+}
+.display-md {
+  font-family: var(--display); font-weight: 900;
+  font-size: 72px; letter-spacing: -2.5px; line-height: 1.08; color: var(--text);
+}
+.display-sm {
+  font-family: var(--display); font-weight: 800;
+  font-size: 52px; letter-spacing: -1.5px; line-height: 1.1; color: var(--text);
+}
+.heading {
+  font-family: var(--display); font-weight: 800;
+  font-size: 40px; letter-spacing: -1px; line-height: 1.15; color: var(--text);
+}
+.body-lg {
+  font-family: var(--body); font-weight: 500;
+  font-size: 28px; line-height: 1.55; color: var(--soft);
+}
+.body-md {
+  font-family: var(--body); font-weight: 500;
+  font-size: 22px; line-height: 1.6; color: var(--soft);
+}
+.label-cap {
+  font-family: var(--display); font-weight: 700;
+  font-size: 18px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 28px;
+}
+
+/* ─── GOLD UTILITIES ─────────────────────────────────────────────── */
+.gold { color: var(--gold); }
+.gold-text { color: var(--gold); }
+.gold-grad-text {
+  background: var(--gold-grad); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.glow-bg {
+  background: radial-gradient(ellipse 70% 50% at 50% 40%, var(--gold-glow), transparent 65%);
+}
+
+/* ─── RULE ───────────────────────────────────────────────────────── */
+.rule {
+  width: 64px; height: 3px; background: var(--gold-grad);
+  border-radius: 2px; margin: 0 auto 36px;
+}
+.rule.left { margin-left: 0; }
+
+/* ─── SLIDE TITLE BLOCK ──────────────────────────────────────────── */
+.slide-title {
+  font-family: var(--display); font-weight: 900;
+  font-size: 64px; letter-spacing: -2px; line-height: 1.05;
+  color: var(--text); text-align: center; margin-bottom: 24px;
+}
+.slide-rule {
+  width: 72px; height: 3px; background: var(--gold-grad);
+  border-radius: 2px; margin: 0 auto 48px;
+}
+
+/* ─── TWO-CARD LAYOUT ────────────────────────────────────────────── */
+.two-cards {
+  display: flex; gap: 32px; width: 100%; max-width: 1400px; align-items: stretch;
+}
+.card {
+  flex: 1; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 20px; padding: 52px 48px;
+  display: flex; flex-direction: column; gap: 20px; position: relative; overflow: hidden;
+}
+.card.gold-accent { border-color: rgba(242,193,78,.4); }
+.card.gold-accent::before {
+  content: ''; position: absolute; top: 0; left: 40px; right: 40px;
+  height: 2px; background: var(--gold-grad); border-radius: 0 0 2px 2px;
+}
+.card-label {
+  font-family: var(--display); font-weight: 700; font-size: 13px;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--gold);
+}
+.card-title {
+  font-family: var(--display); font-weight: 900; font-size: 44px;
+  letter-spacing: -1.5px; line-height: 1; color: var(--text);
+}
+.card-body {
+  font-family: var(--body); font-weight: 500; font-size: 24px;
+  line-height: 1.55; color: var(--soft);
+}
+
+/* ─── THREE-CARD LAYOUT ──────────────────────────────────────────── */
+.three-cards {
+  display: flex; gap: 28px; width: 100%; max-width: 1500px; align-items: stretch;
+}
+
+/* ─── QUADRANT ───────────────────────────────────────────────────── */
+.quadrant-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  max-width: 1200px; width: 100%;
+}
+.quad-cell {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 18px; padding: 40px 44px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.quad-cell.gold-cell { border-color: rgba(242,193,78,.35); }
+.quad-cell.gold-cell::before {
+  content: ''; display: block; width: 40px; height: 2px;
+  background: var(--gold-grad); border-radius: 2px;
+}
+.quad-letter {
+  font-family: var(--display); font-weight: 900; font-size: 52px;
+  letter-spacing: -2px; line-height: 1;
+}
+.quad-name {
+  font-family: var(--display); font-weight: 800; font-size: 30px;
+  letter-spacing: -0.5px; color: var(--text);
+}
+.quad-desc {
+  font-family: var(--body); font-weight: 500; font-size: 22px;
+  line-height: 1.5; color: var(--muted);
+}
+
+/* ─── VS MEDALLION ───────────────────────────────────────────────── */
+.vs-wrap {
+  display: flex; align-items: center; gap: 0; width: 100%; max-width: 1400px;
+}
+.vs-pill {
+  flex-shrink: 0; width: 72px; height: 72px; border-radius: 50%;
+  background: var(--surface-2); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display); font-weight: 900; font-size: 16px;
+  letter-spacing: 1px; color: var(--muted-2);
+  margin: 0 -4px; z-index: 1;
+}
+
+/* ─── STAIRCASE ──────────────────────────────────────────────────── */
+svg text { font-family: 'Inter', sans-serif; }
+
+/* ─── CHIPS ──────────────────────────────────────────────────────── */
+.chip-row {
+  display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
+  margin-top: 40px;
+}
+.chip {
+  padding: 12px 28px; border-radius: 40px;
+  background: var(--surface); border: 1px solid var(--line);
+  font-family: var(--display); font-weight: 700; font-size: 18px;
+  letter-spacing: .5px; color: var(--soft);
+}
+
+/* ─── PRINT ──────────────────────────────────────────────────────── */
+@media print {
+  html, body { overflow: visible; width: auto; height: auto; background: #000; }
+  #stage { position: relative; display: block; background: #000; }
+  #deck { position: relative; width: 297mm; height: 167.0625mm; transform: none !important; }
+  .slide { position: relative; opacity: 1 !important; pointer-events: auto; page-break-before: always; break-before: page; width: 297mm; height: 167.0625mm; }
+  .slide:first-child { page-break-before: avoid; break-before: avoid; }
+  #hint, #counter, #progress-track { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="hint">
+  <span class="hint-key"><kbd>→</kbd><kbd>Space</kbd> Next</span>
+  <span class="hint-key"><kbd>←</kbd> Previous</span>
+  <span class="hint-key"><kbd>Home</kbd> First</span>
+  <span class="hint-key"><kbd>End</kbd> Last</span>
+  <span class="hint-key"><kbd>F</kbd> Fullscreen</span>
+  <span class="hint-key"><kbd>Esc</kbd> Exit fullscreen</span>
+</div>
+
+<div id="stage">
+  <div id="deck">
+
+    <!-- ══ SLIDE 01 — COVER ════════════════════════════════════════ -->
+    <div class="slide glow-bg active" data-index="0">
+      <!-- Faint watermark -->
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;">
+        <span style="font-family:var(--display);font-weight:900;font-size:420px;letter-spacing:-16px;color:rgba(242,193,78,.03);white-space:nowrap;line-height:1;user-select:none;">MINDSET</span>
+      </div>
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:0;">
+        <div style="font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-bottom:32px;">THE BUSINESS GROWTH GAMEPLAN™</div>
+        <div class="gold-grad-text" style="font-family:var(--display);font-weight:900;font-size:200px;letter-spacing:-8px;line-height:.9;">MINDSET</div>
+        <div style="width:96px;height:3px;background:var(--gold-grad);border-radius:2px;margin:44px auto 44px;"></div>
+        <div style="font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);">ELLIOT HAURAKI</div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 02 — THE EMOTIONAL ROLLERCOASTER ══════════════════ -->
+    <div class="slide" data-index="1">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">The Emotional Rollercoaster</div>
+      <div class="slide-rule"></div>
+      <div style="display:flex;align-items:flex-start;gap:80px;width:100%;max-width:1560px;">
+        <!-- Chart -->
+        <svg viewBox="0 0 900 420" width="860" height="390" aria-label="Emotional rollercoaster chart" style="flex-shrink:0;">
+          <defs>
+            <linearGradient id="rcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#F2C14E" stop-opacity=".15"/>
+              <stop offset="100%" stop-color="#F2C14E" stop-opacity=".5"/>
+            </linearGradient>
+            <marker id="arrowY" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <polyline points="1,7 4,1 7,7" fill="none" stroke="#6B6558" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+            <marker id="arrowX" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <polyline points="1,1 7,4 1,7" fill="none" stroke="#6B6558" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+          </defs>
+          <!-- Axes -->
+          <line x1="80" y1="370" x2="80" y2="20" stroke="#3A3A3A" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrowY)"/>
+          <line x1="80" y1="370" x2="880" y2="370" stroke="#3A3A3A" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrowX)"/>
+          <text x="40" y="200" text-anchor="middle" fill="#6B6558" font-size="15" font-weight="700" transform="rotate(-90 40 200)">MONEY</text>
+          <text x="480" y="400" text-anchor="middle" fill="#6B6558" font-size="15" font-weight="700">TIME</text>
+          <!-- Rollercoaster path -->
+          <path d="M 100,300 C 140,290 160,220 200,200 C 240,180 250,340 290,350 C 330,360 360,250 400,180 C 440,110 470,160 510,170 C 550,180 560,80 620,60 C 680,40 700,200 750,240 C 800,280 830,160 870,100"
+                fill="none" stroke="url(#rcGrad)" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Nodes -->
+          <circle cx="100" cy="300" r="10" fill="#141414" stroke="#F2C14E" stroke-width="2"/>
+          <text x="100" y="296" text-anchor="middle" fill="#F2C14E" font-size="11" font-weight="900">1</text>
+          <circle cx="290" cy="350" r="10" fill="#141414" stroke="#F2C14E" stroke-width="2"/>
+          <text x="290" y="346" text-anchor="middle" fill="#F2C14E" font-size="11" font-weight="900">2</text>
+          <circle cx="400" cy="180" r="10" fill="#141414" stroke="#F2C14E" stroke-width="2"/>
+          <text x="400" y="176" text-anchor="middle" fill="#F2C14E" font-size="11" font-weight="900">3</text>
+          <circle cx="510" cy="170" r="10" fill="#141414" stroke="#F2C14E" stroke-width="2"/>
+          <text x="510" y="166" text-anchor="middle" fill="#F2C14E" font-size="11" font-weight="900">4</text>
+          <circle cx="620" cy="60" r="10" fill="#141414" stroke="#FFD86A" stroke-width="2.5"/>
+          <text x="620" y="56" text-anchor="middle" fill="#FFD86A" font-size="11" font-weight="900">5</text>
+          <circle cx="750" cy="240" r="10" fill="#141414" stroke="#F2C14E" stroke-width="2"/>
+          <text x="750" y="236" text-anchor="middle" fill="#F2C14E" font-size="11" font-weight="900">6</text>
+          <circle cx="870" cy="100" r="12" fill="#1C1C10" stroke="#FFD86A" stroke-width="2.5"/>
+          <text x="870" y="96" text-anchor="middle" fill="#FFD86A" font-size="11" font-weight="900">7</text>
+          <!-- Zero line -->
+          <line x1="80" y1="280" x2="880" y2="280" stroke="#262626" stroke-width="1" stroke-dasharray="6,5"/>
+        </svg>
+        <!-- Legend -->
+        <div style="display:flex;flex-direction:column;gap:14px;padding-top:20px;">
+          <div style="font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted-2);margin-bottom:8px;">LEGEND</div>
+          <div style="font-family:var(--body);font-size:20px;font-weight:500;color:var(--soft);display:flex;gap:14px;align-items:baseline;"><span style="font-family:var(--display);font-weight:900;font-size:16px;color:var(--gold);min-width:24px;">1</span>Fear / Insanity / Craziness</div>
+          <div style="font-family:var(--body);font-size:20px;font-weight:500;color:var(--soft);display:flex;gap:14px;align-items:baseline;"><span style="font-family:var(--display);font-weight:900;font-size:16px;color:var(--gold);min-width:24px;">2</span>Dip in Income</div>
+          <div style="font-family:var(--body);font-size:20px;font-weight:500;color:var(--soft);display:flex;gap:14px;align-items:baseline;"><span style="font-family:var(--display);font-weight:900;font-size:16px;color:var(--gold);min-width:24px;">3</span>Results</div>
+          <div style="font-family:var(--body);font-size:20px;font-weight:500;color:var(--soft);display:flex;gap:14px;align-items:baseline;"><span style="font-family:var(--display);font-weight:900;font-size:16px;color:var(--gold);min-width:24px;">4</span>Break Even</div>
+          <div style="font-family:var(--body);font-size:20px;font-weight:500;color:var(--soft);display:flex;gap:14px;align-items:baseline;"><span style="font-family:var(--display);font-weight:900;font-size:16px;color:var(--gold-hi);min-width:24px;">5</span>Crazy Growth</div>
+          <div style="font-family:var(--body);font-size:20px;font-weight:500;color:var(--soft);display:flex;gap:14px;align-items:baseline;"><span style="font-family:var(--display);font-weight:900;font-size:16px;color:var(--gold);min-width:24px;">6</span>Fear / Insanity Pt. II</div>
+          <div style="font-family:var(--body);font-size:20px;font-weight:500;color:var(--soft);display:flex;gap:14px;align-items:baseline;"><span style="font-family:var(--display);font-weight:900;font-size:16px;color:var(--gold-hi);min-width:24px;">7</span>Consistent Growth</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 03 — TWO TYPES OF GAMES ═══════════════════════════ -->
+    <div class="slide" data-index="2">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Two Types of Games</div>
+      <div class="slide-rule"></div>
+      <div class="vs-wrap">
+        <div class="card" style="flex:1;">
+          <div style="margin-bottom:8px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M8 21l4-4 4 4" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 3v14" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <path d="M3 9l4.5 3L3 15" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 9l-4.5 3 4.5 3" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="card-label">Finite Games</div>
+          <div class="card-title">Played to win.</div>
+          <div class="card-body" style="margin-top:8px;">Fixed rules.</div>
+          <div class="card-body">A clear end point.</div>
+          <div class="card-body" style="color:var(--muted-2);font-size:20px;margin-top:8px;">Win → game over.</div>
+        </div>
+        <div class="vs-pill">VS</div>
+        <div class="card gold-accent" style="flex:1;">
+          <div style="margin-bottom:8px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M17 2.1l4 4-4 4" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 12.2v-2a4 4 0 0 1 4-4h14" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 21.9l-4-4 4-4" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 11.8v2a4 4 0 0 1-4 4H3" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="card-label" style="color:var(--gold-hi);">Infinite Games</div>
+          <div class="card-title">Played to keep playing.</div>
+          <div class="card-body" style="margin-top:8px;">The goal is to outlast.</div>
+          <div class="card-body">The rules shift over time.</div>
+          <div class="card-body" style="color:var(--gold);font-size:20px;margin-top:8px;">No finish line. That's the point.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 04 — DISC RESULTS ═════════════════════════════════ -->
+    <div class="slide" data-index="3">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">DISC Results</div>
+      <div class="slide-rule"></div>
+      <div class="quadrant-grid">
+        <div class="quad-cell gold-cell">
+          <div class="quad-letter gold-grad-text">D</div>
+          <div class="quad-name">Dominance</div>
+          <div class="quad-desc">Direct and results-driven. Moves fast, decides faster.</div>
+        </div>
+        <div class="quad-cell">
+          <div class="quad-letter gold-grad-text">I</div>
+          <div class="quad-name">Influence</div>
+          <div class="quad-desc">Expressive and persuasive. People follow the energy.</div>
+        </div>
+        <div class="quad-cell">
+          <div class="quad-letter gold-grad-text">S</div>
+          <div class="quad-name">Steadiness</div>
+          <div class="quad-desc">Patient and consistent. The engine that doesn't stop.</div>
+        </div>
+        <div class="quad-cell">
+          <div class="quad-letter gold-grad-text">C</div>
+          <div class="quad-name">Conscientiousness</div>
+          <div class="quad-desc">Analytical and precise. The detail others miss.</div>
+        </div>
+      </div>
+      <!-- Axis labels -->
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;pointer-events:none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20" stroke="#3A3A3A" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 05 — SOCIAL VS PERSONAL IDEALISMS ═════════════════ -->
+    <div class="slide" data-index="4">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Social vs Personal Idealisms</div>
+      <div class="slide-rule"></div>
+      <div class="vs-wrap">
+        <div class="card" style="flex:1;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:8px;">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="9" cy="7" r="4" stroke="#F2C14E" stroke-width="1.75"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="card-label">Social Idealisms</div>
+          <div class="card-title" style="font-size:38px;">What the world says you should want.</div>
+          <div class="card-body" style="margin-top:12px;color:var(--muted);">The house. The car. The status. The prestige. Other people's scorecard.</div>
+        </div>
+        <div class="vs-pill">VS</div>
+        <div class="card gold-accent" style="flex:1;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:8px;">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="card-label" style="color:var(--gold-hi);">Personal Idealisms</div>
+          <div class="card-title" style="font-size:38px;">What you actually want.</div>
+          <div class="card-body" style="margin-top:12px;color:var(--gold);">Your scorecard. Built on your values, your life, your definition of enough.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 06 — CHOOSE YOUR ENVIRONMENT ══════════════════════ -->
+    <div class="slide" data-index="5">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Choose Your Environment Wisely</div>
+      <div class="slide-rule"></div>
+      <div class="vs-wrap">
+        <div class="card" style="flex:1;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:8px;">
+            <rect x="2" y="3" width="20" height="14" rx="2" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="8" y1="21" x2="16" y2="21" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <line x1="12" y1="17" x2="12" y2="21" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+          <div class="card-label">Physical Environment</div>
+          <div class="card-title" style="font-size:36px;">Where you work.</div>
+          <div class="card-body" style="margin-top:12px;">Who's around you. What you see. The energy in the room.</div>
+          <div class="card-body" style="color:var(--muted-2);font-size:20px;margin-top:8px;">Your surroundings shape your standards.</div>
+        </div>
+        <div class="vs-pill">+</div>
+        <div class="card gold-accent" style="flex:1;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:8px;">
+            <circle cx="12" cy="12" r="10" stroke="#F2C14E" stroke-width="1.75"/>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="card-label" style="color:var(--gold-hi);">Metaphysical Environment</div>
+          <div class="card-title" style="font-size:36px;">What you consume.</div>
+          <div class="card-body" style="margin-top:12px;">The ideas you live inside. Podcasts, books, conversations, beliefs.</div>
+          <div class="card-body" style="color:var(--gold);font-size:20px;margin-top:8px;">Your inputs become your identity.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 07 — THREE PEOPLE IN THIS WORLD ═══════════════════ -->
+    <div class="slide" data-index="6">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Three People in This World</div>
+      <div class="slide-rule"></div>
+      <div class="three-cards">
+        <div class="card" style="flex:1;border-color:#5BC98C44;">
+          <div style="position:absolute;top:0;left:40px;right:40px;height:2px;background:linear-gradient(90deg,#5BC98C,#3AAF72);border-radius:0 0 2px 2px;"></div>
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:8px;">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" stroke="#5BC98C" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="16 7 22 7 22 13" stroke="#5BC98C" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="card-label" style="color:#5BC98C;">Keep</div>
+          <div class="card-title" style="font-size:40px;">Lift your standards.</div>
+          <div class="card-body" style="margin-top:12px;">They see more in you than you see in yourself. Full access.</div>
+        </div>
+        <div class="card" style="flex:1;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:8px;">
+            <circle cx="12" cy="12" r="10" stroke="#F2C14E" stroke-width="1.75"/>
+            <line x1="12" y1="8" x2="12" y2="12" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <line x1="12" y1="16" x2="12.01" y2="16" stroke="#F2C14E" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div class="card-label">Limit</div>
+          <div class="card-title" style="font-size:40px;">Small doses.</div>
+          <div class="card-body" style="margin-top:12px;">Good people in the wrong frequency. Fine in short bursts. Protect your energy.</div>
+        </div>
+        <div class="card" style="flex:1;border-color:#E55D5D44;">
+          <div style="position:absolute;top:0;left:40px;right:40px;height:2px;background:linear-gradient(90deg,#E55D5D,#C44);border-radius:0 0 2px 2px;"></div>
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:8px;">
+            <line x1="18" y1="6" x2="6" y2="18" stroke="#E55D5D" stroke-width="1.75" stroke-linecap="round"/>
+            <line x1="6" y1="6" x2="18" y2="18" stroke="#E55D5D" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+          <div class="card-label" style="color:#E55D5D;">Cut</div>
+          <div class="card-title" style="font-size:40px;">Drain or derail you.</div>
+          <div class="card-body" style="margin-top:12px;">Every minute with them costs future you. No guilt. Just clarity.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 08 — FOUR QUADRANTS OF LEADERSHIP ═════════════════ -->
+    <div class="slide" data-index="7">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Four Quadrants of Leadership</div>
+      <div class="slide-rule"></div>
+      <div class="quadrant-grid" style="max-width:1400px;">
+        <div class="quad-cell" style="border-top:2px solid rgba(242,193,78,.25);">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="#F2C14E" stroke-width="1.75"/>
+            <path d="M12 8v4l3 3" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="quad-name" style="font-size:28px;">Counseling</div>
+          <div class="quad-desc">Working through the past. Unpacking what's already happened.</div>
+        </div>
+        <div class="quad-cell" style="border-top:2px solid rgba(242,193,78,.25);">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="quad-name" style="font-size:28px;">Training</div>
+          <div class="quad-desc">Building skills through instruction. Here is how. Do this.</div>
+        </div>
+        <div class="quad-cell gold-cell">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="#F2C14E" stroke-width="1.75"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="17" x2="12.01" y2="17" stroke="#F2C14E" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div class="quad-name" style="font-size:28px;">Coaching</div>
+          <div class="quad-desc">Drawing answers out. Present-focused. You already know this.</div>
+        </div>
+        <div class="quad-cell gold-cell">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="9" cy="7" r="4" stroke="#F2C14E" stroke-width="1.75"/>
+            <polyline points="23 11 17 17 14 14" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="quad-name" style="font-size:28px;">Mentoring</div>
+          <div class="quad-desc">Walking ahead. Lived experience. I've been where you are.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 09 — CURRENT YOU VS FUTURE YOU ════════════════════ -->
+    <div class="slide" data-index="8">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Current You vs Future You</div>
+      <div class="slide-rule"></div>
+      <div style="display:flex;align-items:center;gap:0;width:100%;max-width:1400px;margin-bottom:40px;">
+        <!-- Current You card -->
+        <div style="flex:1;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:44px 48px;display:flex;flex-direction:column;gap:16px;">
+          <div style="font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);">Current You</div>
+          <div style="font-family:var(--display);font-weight:900;font-size:44px;letter-spacing:-1.5px;color:var(--soft);">Where you are.</div>
+          <div style="font-family:var(--body);font-size:22px;color:var(--muted-2);line-height:1.5;">The beliefs, habits, and skills you have right now.</div>
+        </div>
+        <!-- Gap arrow -->
+        <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 32px;">
+          <svg width="200" height="60" viewBox="0 0 200 60" aria-hidden="true">
+            <defs>
+              <linearGradient id="arrowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FFD86A"/>
+                <stop offset="100%" stop-color="#E5942A"/>
+              </linearGradient>
+            </defs>
+            <line x1="10" y1="30" x2="172" y2="30" stroke="url(#arrowGrad)" stroke-width="2" stroke-linecap="round"/>
+            <polygon points="172,22 190,30 172,38" fill="url(#arrowGrad)"/>
+          </svg>
+          <div style="font-family:var(--display);font-weight:800;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);">THE GAP</div>
+        </div>
+        <!-- Future You card -->
+        <div style="flex:1;background:var(--surface);border:1px solid rgba(242,193,78,.4);border-radius:20px;padding:44px 48px;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:0;left:40px;right:40px;height:2px;background:var(--gold-grad);border-radius:0 0 2px 2px;"></div>
+          <div style="font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-hi);">Future You</div>
+          <div class="gold-grad-text" style="font-family:var(--display);font-weight:900;font-size:44px;letter-spacing:-1.5px;">Where you're going.</div>
+          <div style="font-family:var(--body);font-size:22px;color:var(--gold);line-height:1.5;">The person who has what you want.</div>
+        </div>
+      </div>
+      <!-- Chips -->
+      <div class="chip-row">
+        <div class="chip">Skills</div>
+        <div class="chip">Beliefs</div>
+        <div class="chip">Disciplines</div>
+        <div class="chip">Personality Traits</div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 10 — FOUR STAGES OF LEARNING ═════════════════════ -->
+    <div class="slide" data-index="9">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Four Stages of Learning</div>
+      <div class="slide-rule"></div>
+      <!--
+        Staircase rebuilt so text lives INSIDE each card.
+        Cards share a common bottom (y=430). Heights increase left→right:
+          Stage 1: y=310 h=120  (top node cy=310)
+          Stage 2: y=210 h=220  (top node cy=210)
+          Stage 3: y=110 h=320  (top node cy=110)
+          Stage 4: y=20  h=410  (top node cy=20)
+        Text is anchored 28px below each card's top edge, well inside.
+        Sub-line text is anchored ≥24px above each card's bottom (430).
+      -->
+      <svg viewBox="0 0 1560 480" width="1520" height="460" aria-label="Four stages of learning ascending staircase">
+        <!-- baseline -->
+        <line x1="60" y1="430" x2="1500" y2="430" stroke="#262626" stroke-width="1.5"/>
+
+        <!-- Step 1: rect top=310, bottom=430, height=120 -->
+        <rect x="60" y="310" width="300" height="120" rx="14" fill="#141414" stroke="#262626" stroke-width="1.5"/>
+        <!-- text: kicker at top+22, name at +48/+70, sub-line at bottom-22 -->
+        <text x="210" y="335" text-anchor="middle" fill="#6B6558" font-size="12" font-weight="700" letter-spacing="2">STAGE 01</text>
+        <text x="210" y="362" text-anchor="middle" fill="#8A8477" font-size="19" font-weight="800">Unconscious</text>
+        <text x="210" y="383" text-anchor="middle" fill="#8A8477" font-size="19" font-weight="800">Incompetence</text>
+        <text x="210" y="410" text-anchor="middle" fill="#6B6558" font-size="13" font-weight="500">You don't know what you don't know.</text>
+        <!-- top node -->
+        <circle cx="210" cy="311" r="7" fill="#262626" stroke="#3A3A3A" stroke-width="1.5"/>
+        <!-- connector to stage 2 -->
+        <line x1="363" y1="311" x2="420" y2="311" stroke="#3A3A3A" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <polygon points="415,305 428,311 415,317" fill="#3A3A3A"/>
+
+        <!-- Step 2: rect top=210, bottom=430, height=220 -->
+        <rect x="430" y="210" width="300" height="220" rx="14" fill="#141414" stroke="#262626" stroke-width="1.5"/>
+        <text x="580" y="235" text-anchor="middle" fill="#6B6558" font-size="12" font-weight="700" letter-spacing="2">STAGE 02</text>
+        <text x="580" y="268" text-anchor="middle" fill="#8A8477" font-size="19" font-weight="800">Conscious</text>
+        <text x="580" y="290" text-anchor="middle" fill="#8A8477" font-size="19" font-weight="800">Incompetence</text>
+        <text x="580" y="320" text-anchor="middle" fill="#6B6558" font-size="13" font-weight="500">You know what you don't know.</text>
+        <!-- top node -->
+        <circle cx="580" cy="211" r="7" fill="#262626" stroke="#3A3A3A" stroke-width="1.5"/>
+        <!-- connector to stage 3 -->
+        <line x1="733" y1="211" x2="790" y2="211" stroke="#3A3A3A" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <polygon points="785,205 798,211 785,217" fill="#3A3A3A"/>
+
+        <!-- Step 3: rect top=110, bottom=430, height=320 -->
+        <rect x="800" y="110" width="300" height="320" rx="14" fill="#141414" stroke="#F2C14E" stroke-width="1.5" stroke-opacity=".5"/>
+        <text x="950" y="135" text-anchor="middle" fill="#8A8477" font-size="12" font-weight="700" letter-spacing="2">STAGE 03</text>
+        <text x="950" y="168" text-anchor="middle" fill="#B8B2A4" font-size="19" font-weight="800">Conscious</text>
+        <text x="950" y="190" text-anchor="middle" fill="#B8B2A4" font-size="19" font-weight="800">Competence</text>
+        <text x="950" y="220" text-anchor="middle" fill="#8A8477" font-size="13" font-weight="500">You can do it with focus.</text>
+        <!-- top node -->
+        <circle cx="950" cy="111" r="7" fill="#1A1A10" stroke="#F2C14E" stroke-width="1.75"/>
+        <!-- connector to stage 4 -->
+        <line x1="1103" y1="111" x2="1160" y2="111" stroke="#F2C14E" stroke-width="1.5" stroke-dasharray="5,4" stroke-opacity=".6"/>
+        <polygon points="1155,105 1168,111 1155,117" fill="#F2C14E" fill-opacity=".6"/>
+
+        <!-- Step 4 (gold): rect top=20, bottom=430, height=410 -->
+        <rect x="1170" y="20" width="300" height="410" rx="14" fill="#1C1C10" stroke="#FFD86A" stroke-width="2.5"/>
+        <text x="1320" y="46" text-anchor="middle" fill="#8A8477" font-size="12" font-weight="700" letter-spacing="2">STAGE 04</text>
+        <text x="1320" y="84" text-anchor="middle" fill="#FFD86A" font-size="22" font-weight="900">Unconscious</text>
+        <text x="1320" y="110" text-anchor="middle" fill="#FFD86A" font-size="22" font-weight="900">Competence</text>
+        <text x="1320" y="146" text-anchor="middle" fill="#B8B2A4" font-size="15" font-weight="500">It's second nature.</text>
+        <text x="1320" y="170" text-anchor="middle" fill="#8A8477" font-size="15" font-weight="500">You don't even think about it.</text>
+        <!-- top node (double circle) -->
+        <circle cx="1320" cy="21" r="10" fill="#1C1C10" stroke="#FFD86A" stroke-width="2.5"/>
+        <circle cx="1320" cy="21" r="4" fill="#FFD86A"/>
+
+        <!-- dashed diagonal connecting all top nodes -->
+        <polyline points="210,311 580,211 950,111 1320,21" fill="none" stroke="rgba(242,193,78,.12)" stroke-width="1.5" stroke-dasharray="6,5"/>
+      </svg>
+    </div>
+
+    <!-- ══ SLIDE 11 — CONE OF LEARNING ════════════════════════════ -->
+    <div class="slide" data-index="10">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Cone of Learning</div>
+      <div class="slide-rule"></div>
+      <div style="display:flex;align-items:center;gap:80px;width:100%;max-width:1400px;">
+        <svg viewBox="0 0 600 520" width="540" height="468" aria-label="Cone of learning pyramid" style="flex-shrink:0;">
+          <!-- Bars widening downward = inverted pyramid -->
+          <!-- Bar 1: Reading 10% -->
+          <rect x="200" y="20" width="200" height="64" rx="8" fill="#1A1A1A" stroke="#2E2E2E" stroke-width="1.5"/>
+          <text x="300" y="50" text-anchor="middle" fill="#8A8477" font-size="16" font-weight="700">READING</text>
+          <text x="300" y="70" text-anchor="middle" fill="#6B6558" font-size="13" font-weight="500">10% retained</text>
+          <!-- Bar 2: Hearing 20% -->
+          <rect x="158" y="96" width="284" height="64" rx="8" fill="#1A1A1A" stroke="#2E2E2E" stroke-width="1.5"/>
+          <text x="300" y="126" text-anchor="middle" fill="#8A8477" font-size="16" font-weight="700">HEARING</text>
+          <text x="300" y="146" text-anchor="middle" fill="#6B6558" font-size="13" font-weight="500">20% retained</text>
+          <!-- Bar 3: Seeing 30% -->
+          <rect x="108" y="172" width="384" height="64" rx="8" fill="#1C1C1C" stroke="#323232" stroke-width="1.5"/>
+          <text x="300" y="202" text-anchor="middle" fill="#8A8477" font-size="16" font-weight="700">SEEING</text>
+          <text x="300" y="222" text-anchor="middle" fill="#6B6558" font-size="13" font-weight="500">30% retained</text>
+          <!-- Bar 4: Demonstration 50% -->
+          <rect x="60" y="248" width="480" height="64" rx="8" fill="#1C1C18" stroke="#363630" stroke-width="1.5"/>
+          <text x="300" y="276" text-anchor="middle" fill="#B8B2A4" font-size="15" font-weight="700">WATCHING A DEMONSTRATION</text>
+          <text x="300" y="296" text-anchor="middle" fill="#8A8477" font-size="13" font-weight="500">50% retained</text>
+          <!-- Bar 5: Discussing 70% -->
+          <rect x="20" y="324" width="560" height="64" rx="8" fill="#1E1E16" stroke="#3E3E2E" stroke-width="1.5"/>
+          <text x="300" y="350" text-anchor="middle" fill="#B8B2A4" font-size="15" font-weight="700">DISCUSSING &amp; PARTICIPATING</text>
+          <text x="300" y="370" text-anchor="middle" fill="#8A8477" font-size="13" font-weight="500">70% retained</text>
+          <!-- Bar 6: Doing — gold -->
+          <rect x="0" y="400" width="600" height="72" rx="10" fill="#1C1C10" stroke="#FFD86A" stroke-width="2.5"/>
+          <text x="300" y="432" text-anchor="middle" fill="#FFD86A" font-size="18" font-weight="900">DOING THE REAL THING</text>
+          <text x="300" y="456" text-anchor="middle" fill="#F2C14E" font-size="14" font-weight="600">90% retained</text>
+          <!-- Axis arrow on right -->
+          <line x1="588" y1="472" x2="588" y2="28" stroke="#3A3A3A" stroke-width="1.5" stroke-linecap="round"/>
+          <polygon points="582,34 588,20 594,34" fill="#3A3A3A"/>
+          <text x="560" y="260" text-anchor="middle" fill="#6B6558" font-size="12" font-weight="700" transform="rotate(90 570 260)">RETENTION</text>
+        </svg>
+        <!-- Right column caption -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div style="font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted-2);margin-bottom:8px;">The Principle</div>
+          <div style="font-family:var(--display);font-weight:900;font-size:44px;letter-spacing:-1.5px;color:var(--text);line-height:1.1;">The more you do,<br>the more you keep.</div>
+          <div style="width:56px;height:3px;background:var(--gold-grad);border-radius:2px;margin:8px 0;"></div>
+          <div style="font-family:var(--body);font-size:24px;color:var(--soft);line-height:1.5;">Passive learning leaves 90% on the table.</div>
+          <div style="font-family:var(--body);font-size:24px;color:var(--gold);line-height:1.5;">Action is the curriculum.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 12 — TWO TYPES OF CLIENTS ═════════════════════════ -->
+    <div class="slide" data-index="11">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Two Types of Clients</div>
+      <div class="slide-rule"></div>
+      <div class="vs-wrap">
+        <div class="card" style="flex:1;">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:12px;">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="card-label">DO</div>
+          <div class="card-title">Acts first.</div>
+          <div class="card-body" style="margin-top:12px;">Doesn't need the full picture. Needs the next step.</div>
+          <div style="margin-top:24px;padding:18px 24px;background:var(--surface-2);border-radius:12px;border:1px solid var(--line);">
+            <div style="font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Your move with them</div>
+            <div style="font-family:var(--body);font-size:22px;color:var(--text);">Give them the next action. Skip the theory.</div>
+          </div>
+        </div>
+        <div class="vs-pill">VS</div>
+        <div class="card gold-accent" style="flex:1;">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:12px;">
+            <circle cx="11" cy="11" r="8" stroke="#F2C14E" stroke-width="1.75"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+          <div class="card-label" style="color:var(--gold-hi);">THINK</div>
+          <div class="card-title">Processes first.</div>
+          <div class="card-body" style="margin-top:12px;">Needs to understand before they move. Give them the why.</div>
+          <div style="margin-top:24px;padding:18px 24px;background:var(--surface-2);border-radius:12px;border:1px solid rgba(242,193,78,.2);">
+            <div style="font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Your move with them</div>
+            <div style="font-family:var(--body);font-size:22px;color:var(--gold);">Give them the reasoning. Then the action.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 13 — FEEDBACK LOOPS ══════════════════════════════ -->
+    <div class="slide" data-index="12">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Feedback Loops</div>
+      <div class="slide-rule"></div>
+      <!-- Flow diagram — HTML flexbox so labels are guaranteed centered inside each box -->
+      <div style="display:flex;align-items:center;gap:0;width:100%;max-width:1500px;margin-bottom:44px;">
+
+        <!-- CATALYST pill -->
+        <div style="flex:0 0 180px;height:72px;border-radius:36px;background:#1C1C10;border:2.5px solid #FFD86A;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <span style="font-family:var(--display);font-weight:900;font-size:17px;letter-spacing:1px;color:#FFD86A;">CATALYST</span>
+        </div>
+
+        <!-- Arrow -->
+        <div style="flex:0 0 52px;display:flex;align-items:center;justify-content:center;">
+          <svg width="52" height="20" viewBox="0 0 52 20" aria-hidden="true">
+            <line x1="2" y1="10" x2="38" y2="10" stroke="#3A3A3A" stroke-width="1.5"/>
+            <polygon points="34,4 48,10 34,16" fill="#3A3A3A"/>
+          </svg>
+        </div>
+
+        <!-- REACTION box 1 -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:0;">
+          <div style="width:100%;height:72px;border-radius:12px;background:#141414;border:1.5px solid #262626;display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:var(--display);font-weight:700;font-size:17px;color:#8A8477;">REACTION</span>
+          </div>
+          <div style="margin-top:10px;font-family:var(--display);font-size:13px;font-weight:600;color:#6B6558;letter-spacing:.5px;">automatic</div>
+        </div>
+
+        <!-- Arrow -->
+        <div style="flex:0 0 52px;display:flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:26px;">
+          <svg width="52" height="20" viewBox="0 0 52 20" aria-hidden="true">
+            <line x1="2" y1="10" x2="38" y2="10" stroke="#3A3A3A" stroke-width="1.5"/>
+            <polygon points="34,4 48,10 34,16" fill="#3A3A3A"/>
+          </svg>
+        </div>
+
+        <!-- RESPONSE box 1 (gold outline) -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:0;">
+          <div style="width:100%;height:72px;border-radius:12px;background:#141414;border:2px solid rgba(242,193,78,.6);display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:var(--display);font-weight:800;font-size:17px;color:#F2C14E;">RESPONSE</span>
+          </div>
+          <div style="margin-top:10px;font-family:var(--display);font-size:13px;font-weight:700;color:#F2C14E;letter-spacing:.5px;">chosen</div>
+        </div>
+
+        <!-- Arrow -->
+        <div style="flex:0 0 52px;display:flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:26px;">
+          <svg width="52" height="20" viewBox="0 0 52 20" aria-hidden="true">
+            <line x1="2" y1="10" x2="38" y2="10" stroke="#3A3A3A" stroke-width="1.5"/>
+            <polygon points="34,4 48,10 34,16" fill="#3A3A3A"/>
+          </svg>
+        </div>
+
+        <!-- REACTION box 2 -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:0;">
+          <div style="width:100%;height:72px;border-radius:12px;background:#141414;border:1.5px solid #262626;display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:var(--display);font-weight:700;font-size:17px;color:#8A8477;">REACTION</span>
+          </div>
+          <div style="margin-top:10px;font-family:var(--display);font-size:13px;font-weight:600;color:#6B6558;letter-spacing:.5px;">automatic</div>
+        </div>
+
+        <!-- Arrow -->
+        <div style="flex:0 0 52px;display:flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:26px;">
+          <svg width="52" height="20" viewBox="0 0 52 20" aria-hidden="true">
+            <line x1="2" y1="10" x2="38" y2="10" stroke="#3A3A3A" stroke-width="1.5"/>
+            <polygon points="34,4 48,10 34,16" fill="#3A3A3A"/>
+          </svg>
+        </div>
+
+        <!-- RESPONSE box 2 (gold outline, brighter) -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:0;">
+          <div style="width:100%;height:72px;border-radius:12px;background:#141414;border:2.5px solid #FFD86A;display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:var(--display);font-weight:900;font-size:17px;color:#FFD86A;">RESPONSE</span>
+          </div>
+          <div style="margin-top:10px;font-family:var(--display);font-size:13px;font-weight:700;color:#FFD86A;letter-spacing:.5px;">chosen</div>
+        </div>
+
+        <!-- Arrow -->
+        <div style="flex:0 0 52px;display:flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:26px;">
+          <svg width="52" height="20" viewBox="0 0 52 20" aria-hidden="true">
+            <line x1="2" y1="10" x2="38" y2="10" stroke="#3A3A3A" stroke-width="1.5"/>
+            <polygon points="34,4 48,10 34,16" fill="#3A3A3A"/>
+          </svg>
+        </div>
+
+        <!-- Trailing ellipsis box -->
+        <div style="flex:0 0 80px;height:72px;border-radius:12px;background:#141414;border:1.5px solid #262626;display:flex;align-items:center;justify-content:center;">
+          <span style="font-family:var(--display);font-weight:900;font-size:24px;color:#6B6558;letter-spacing:4px;">···</span>
+        </div>
+
+      </div>
+      <!-- Caption -->
+      <div style="max-width:1100px;text-align:center;font-family:var(--body);font-size:26px;font-weight:500;color:var(--soft);line-height:1.5;">
+        Reactions are automatic. Responses are chosen. The quality of your business follows the quality of your responses.
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 14 — FOUR STAGES OF BUSINESS ═════════════════════ -->
+    <div class="slide" data-index="13">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Four Stages of Business</div>
+      <div class="slide-rule"></div>
+      <svg viewBox="0 0 1560 440" width="1520" height="420" aria-label="Four stages of business ascending staircase">
+        <line x1="60" y1="390" x2="1500" y2="390" stroke="#262626" stroke-width="1.5"/>
+        <!-- Step 1 BUILD -->
+        <rect x="60" y="300" width="300" height="110" rx="14" fill="#141414" stroke="#262626" stroke-width="1.5"/>
+        <text x="210" y="340" text-anchor="middle" fill="#6B6558" font-size="12" font-weight="700" letter-spacing="2">STAGE 01</text>
+        <text x="210" y="372" text-anchor="middle" fill="#F2C14E" font-size="36" font-weight="900">BUILD</text>
+        <text x="210" y="416" text-anchor="middle" fill="#6B6558" font-size="14" font-weight="500">Third world problems.</text>
+        <circle cx="210" cy="301" r="7" fill="#141414" stroke="#3A3A3A" stroke-width="1.5"/>
+        <line x1="363" y1="301" x2="420" y2="301" stroke="#3A3A3A" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <polygon points="415,295 428,301 415,307" fill="#3A3A3A"/>
+        <!-- Step 2 GROW -->
+        <rect x="430" y="210" width="300" height="200" rx="14" fill="#141414" stroke="#262626" stroke-width="1.5"/>
+        <text x="580" y="250" text-anchor="middle" fill="#6B6558" font-size="12" font-weight="700" letter-spacing="2">STAGE 02</text>
+        <text x="580" y="282" text-anchor="middle" fill="#F2C14E" font-size="36" font-weight="900">GROW</text>
+        <text x="580" y="316" text-anchor="middle" fill="#6B6558" font-size="14" font-weight="500">Business limbo.</text>
+        <circle cx="580" cy="211" r="7" fill="#141414" stroke="#3A3A3A" stroke-width="1.5"/>
+        <line x1="733" y1="211" x2="790" y2="211" stroke="#3A3A3A" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <polygon points="785,205 798,211 785,217" fill="#3A3A3A"/>
+        <!-- Step 3 SCALE -->
+        <rect x="800" y="110" width="300" height="300" rx="14" fill="#141414" stroke="#F2C14E" stroke-width="1.5" stroke-opacity=".5"/>
+        <text x="950" y="152" text-anchor="middle" fill="#8A8477" font-size="12" font-weight="700" letter-spacing="2">STAGE 03</text>
+        <text x="950" y="184" text-anchor="middle" fill="#F2C14E" font-size="36" font-weight="900">SCALE</text>
+        <text x="950" y="220" text-anchor="middle" fill="#8A8477" font-size="14" font-weight="500">First world problems.</text>
+        <circle cx="950" cy="111" r="7" fill="#1A1A10" stroke="#F2C14E" stroke-width="1.75"/>
+        <line x1="1103" y1="111" x2="1160" y2="111" stroke="#F2C14E" stroke-width="1.5" stroke-dasharray="5,4" stroke-opacity=".6"/>
+        <polygon points="1155,105 1168,111 1155,117" fill="#F2C14E" fill-opacity=".6"/>
+        <!-- Step 4 CHOICE gold -->
+        <rect x="1170" y="30" width="300" height="380" rx="14" fill="#1C1C10" stroke="#FFD86A" stroke-width="2.5"/>
+        <text x="1320" y="72" text-anchor="middle" fill="#8A8477" font-size="12" font-weight="700" letter-spacing="2">STAGE 04</text>
+        <text x="1320" y="112" text-anchor="middle" fill="#FFD86A" font-size="36" font-weight="900">CHOICE</text>
+        <text x="1320" y="148" text-anchor="middle" fill="#EFEAE0" font-size="16" font-weight="600">End destination.</text>
+        <circle cx="1320" cy="31" r="10" fill="#1C1C10" stroke="#FFD86A" stroke-width="2.5"/>
+        <circle cx="1320" cy="31" r="4" fill="#FFD86A"/>
+        <polyline points="210,301 580,211 950,111 1320,31" fill="none" stroke="rgba(242,193,78,.1)" stroke-width="1.5" stroke-dasharray="6,5"/>
+      </svg>
+    </div>
+
+    <!-- ══ SLIDE 15 — SKILL ASCENSION & LAW OF AVERAGES ═══════════ -->
+    <div class="slide" data-index="14">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Skill Ascension &amp; The Law of Averages</div>
+      <div class="slide-rule"></div>
+      <svg viewBox="0 0 1560 440" width="1520" height="420" aria-label="Skill ascension staircase">
+        <line x1="60" y1="390" x2="1500" y2="390" stroke="#262626" stroke-width="1.5"/>
+        <!-- Step 1 MARKETING -->
+        <rect x="60" y="280" width="300" height="130" rx="14" fill="#141414" stroke="#262626" stroke-width="1.5"/>
+        <text x="210" y="316" text-anchor="middle" fill="#6B6558" font-size="12" font-weight="700" letter-spacing="2">SKILL 01</text>
+        <text x="210" y="352" text-anchor="middle" fill="#F2C14E" font-size="30" font-weight="900">MARKETING</text>
+        <text x="210" y="380" text-anchor="middle" fill="#6B6558" font-size="13" font-weight="500">Attention in.</text>
+        <circle cx="210" cy="281" r="7" fill="#141414" stroke="#3A3A3A" stroke-width="1.5"/>
+        <line x1="363" y1="281" x2="420" y2="281" stroke="#3A3A3A" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <polygon points="415,275 428,281 415,287" fill="#3A3A3A"/>
+        <!-- Step 2 APPOINTMENT SETTING -->
+        <rect x="430" y="190" width="300" height="220" rx="14" fill="#141414" stroke="#262626" stroke-width="1.5"/>
+        <text x="580" y="228" text-anchor="middle" fill="#6B6558" font-size="12" font-weight="700" letter-spacing="2">SKILL 02</text>
+        <text x="580" y="260" text-anchor="middle" fill="#F2C14E" font-size="24" font-weight="900">APPOINTMENT</text>
+        <text x="580" y="290" text-anchor="middle" fill="#F2C14E" font-size="24" font-weight="900">SETTING</text>
+        <text x="580" y="320" text-anchor="middle" fill="#6B6558" font-size="13" font-weight="500">Conversations booked.</text>
+        <circle cx="580" cy="191" r="7" fill="#141414" stroke="#3A3A3A" stroke-width="1.5"/>
+        <line x1="733" y1="191" x2="790" y2="191" stroke="#3A3A3A" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <polygon points="785,185 798,191 785,197" fill="#3A3A3A"/>
+        <!-- Step 3 CLOSING -->
+        <rect x="800" y="100" width="300" height="310" rx="14" fill="#141414" stroke="#F2C14E" stroke-width="1.5" stroke-opacity=".5"/>
+        <text x="950" y="140" text-anchor="middle" fill="#8A8477" font-size="12" font-weight="700" letter-spacing="2">SKILL 03</text>
+        <text x="950" y="178" text-anchor="middle" fill="#F2C14E" font-size="30" font-weight="900">CLOSING</text>
+        <text x="950" y="214" text-anchor="middle" fill="#8A8477" font-size="13" font-weight="500">Decisions made.</text>
+        <circle cx="950" cy="101" r="7" fill="#1A1A10" stroke="#F2C14E" stroke-width="1.75"/>
+        <line x1="1103" y1="101" x2="1160" y2="101" stroke="#F2C14E" stroke-width="1.5" stroke-dasharray="5,4" stroke-opacity=".6"/>
+        <polygon points="1155,95 1168,101 1155,107" fill="#F2C14E" fill-opacity=".6"/>
+        <!-- Step 4 CLIENTS gold -->
+        <rect x="1170" y="20" width="300" height="390" rx="14" fill="#1C1C10" stroke="#FFD86A" stroke-width="2.5"/>
+        <text x="1320" y="60" text-anchor="middle" fill="#8A8477" font-size="12" font-weight="700" letter-spacing="2">OUTCOME</text>
+        <text x="1320" y="100" text-anchor="middle" fill="#FFD86A" font-size="30" font-weight="900">CLIENTS</text>
+        <text x="1320" y="136" text-anchor="middle" fill="#FFD86A" font-size="24" font-weight="900">= $$$</text>
+        <text x="1320" y="170" text-anchor="middle" fill="#EFEAE0" font-size="14" font-weight="600">The output.</text>
+        <circle cx="1320" cy="21" r="10" fill="#1C1C10" stroke="#FFD86A" stroke-width="2.5"/>
+        <circle cx="1320" cy="21" r="4" fill="#FFD86A"/>
+        <polyline points="210,281 580,191 950,101 1320,21" fill="none" stroke="rgba(242,193,78,.1)" stroke-width="1.5" stroke-dasharray="6,5"/>
+      </svg>
+    </div>
+
+    <!-- ══ SLIDE 16 — THREE TYPES OF MONEY ════════════════════════ -->
+    <div class="slide" data-index="15">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Three Types of Money</div>
+      <div class="slide-rule"></div>
+      <div class="three-cards">
+        <div class="card gold-accent" style="flex:1;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:8px;">
+            <line x1="12" y1="1" x2="12" y2="23" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="card-label">New Money</div>
+          <div class="card-title" style="font-size:40px;">New clients. New offers.</div>
+          <div class="card-body" style="margin-top:12px;">The revenue that expands the business. Front-end growth.</div>
+        </div>
+        <div class="card gold-accent" style="flex:1;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:8px;">
+            <polyline points="17 1 21 5 17 9" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="7 23 3 19 7 15" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="card-label">More Money</div>
+          <div class="card-title" style="font-size:40px;">Existing clients.</div>
+          <div class="card-body" style="margin-top:12px;">Ascension. Retention. Expansion. The revenue already in the room.</div>
+        </div>
+        <div class="card gold-accent" style="flex:1;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:8px;">
+            <rect x="2" y="7" width="20" height="14" rx="3" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="12" x2="12" y2="16" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <line x1="10" y1="14" x2="14" y2="14" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+          <div class="card-label">Save Money</div>
+          <div class="card-title" style="font-size:40px;">Money kept.</div>
+          <div class="card-body" style="margin-top:12px;">Margins protected. Waste removed. The quiet multiplier.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 17 — MARGINS & LEVERAGE ══════════════════════════ -->
+    <div class="slide" data-index="16">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Understanding Margins &amp; Leverage</div>
+      <div class="slide-rule"></div>
+      <div class="vs-wrap">
+        <div class="card" style="flex:1;">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:12px;">
+            <line x1="12" y1="1" x2="12" y2="23" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="card-label">Margins</div>
+          <div class="card-title">What you keep from every dollar.</div>
+          <div class="card-body" style="margin-top:16px;">High margins buy options. Low margins make you a prisoner of your own revenue.</div>
+          <div style="margin-top:24px;padding:16px 20px;background:var(--surface-2);border-radius:10px;">
+            <div style="font-family:var(--body);font-size:20px;color:var(--gold);font-weight:500;">Revenue is vanity. Margin is sanity.</div>
+          </div>
+        </div>
+        <div class="vs-pill">+</div>
+        <div class="card gold-accent" style="flex:1;">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:12px;">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="16 7 22 7 22 13" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="card-label" style="color:var(--gold-hi);">Leverage</div>
+          <div class="card-title">What multiplies your effort.</div>
+          <div class="card-body" style="margin-top:16px;">Systems. People. Capital. Attention. The four forces that let you scale without burning out.</div>
+          <div style="margin-top:24px;display:flex;flex-wrap:wrap;gap:10px;">
+            <span style="padding:8px 18px;border-radius:30px;background:var(--surface-2);border:1px solid rgba(242,193,78,.25);font-family:var(--display);font-weight:700;font-size:15px;color:var(--gold);">Systems</span>
+            <span style="padding:8px 18px;border-radius:30px;background:var(--surface-2);border:1px solid rgba(242,193,78,.25);font-family:var(--display);font-weight:700;font-size:15px;color:var(--gold);">People</span>
+            <span style="padding:8px 18px;border-radius:30px;background:var(--surface-2);border:1px solid rgba(242,193,78,.25);font-family:var(--display);font-weight:700;font-size:15px;color:var(--gold);">Capital</span>
+            <span style="padding:8px 18px;border-radius:30px;background:var(--surface-2);border:1px solid rgba(242,193,78,.25);font-family:var(--display);font-weight:700;font-size:15px;color:var(--gold);">Attention</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 18 — LAW OF NATURAL SELECTION ════════════════════ -->
+    <div class="slide" data-index="17">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Law of Natural Selection</div>
+      <div class="slide-rule"></div>
+      <div style="display:flex;flex-direction:column;gap:20px;width:100%;max-width:1300px;">
+        <!-- Row A (gold) -->
+        <div style="display:flex;align-items:center;gap:32px;padding:28px 40px;background:#1C1C10;border:1.5px solid rgba(255,216,106,.5);border-radius:16px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--display);font-weight:900;font-size:22px;color:#0A0A0A;">A</span>
+          </div>
+          <div style="font-family:var(--body);font-size:26px;font-weight:500;color:var(--text);flex:1;">Does what you say</div>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><polyline points="5 12 10 17 20 7" stroke="#5BC98C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-family:var(--display);font-weight:800;font-size:22px;color:#5BC98C;min-width:220px;text-align:right;">Great results.</div>
+        </div>
+        <!-- Row B -->
+        <div style="display:flex;align-items:center;gap:32px;padding:28px 40px;background:var(--surface);border:1px solid var(--line);border-radius:16px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--display);font-weight:900;font-size:22px;color:var(--soft);">B</span>
+          </div>
+          <div style="font-family:var(--body);font-size:26px;font-weight:500;color:var(--soft);flex:1;">Does partly what you say</div>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><line x1="5" y1="12" x2="19" y2="12" stroke="#8A8477" stroke-width="2" stroke-linecap="round"/></svg>
+          <div style="font-family:var(--display);font-weight:800;font-size:22px;color:var(--muted);min-width:220px;text-align:right;">Mediocre results.</div>
+        </div>
+        <!-- Row C -->
+        <div style="display:flex;align-items:center;gap:32px;padding:28px 40px;background:var(--surface);border:1px solid var(--line);border-radius:16px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--display);font-weight:900;font-size:22px;color:var(--muted);">C</span>
+          </div>
+          <div style="font-family:var(--body);font-size:26px;font-weight:500;color:var(--muted);flex:1;">Doesn't do what you say</div>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><polyline points="4 6 12 14 20 6" stroke="#E55D5D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-family:var(--display);font-weight:800;font-size:22px;color:var(--red);min-width:220px;text-align:right;">Drops off.</div>
+        </div>
+        <!-- Row D -->
+        <div style="display:flex;align-items:center;gap:32px;padding:28px 40px;background:var(--surface);border:1px solid var(--line);border-radius:16px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--display);font-weight:900;font-size:22px;color:var(--muted-2);">D</span>
+          </div>
+          <div style="font-family:var(--body);font-size:26px;font-weight:500;color:var(--muted-2);flex:1;">Doesn't do what you say</div>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><line x1="18" y1="6" x2="6" y2="18" stroke="#E55D5D" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="#E55D5D" stroke-width="2" stroke-linecap="round"/></svg>
+          <div style="font-family:var(--display);font-weight:800;font-size:22px;color:var(--red);min-width:220px;text-align:right;">No results. Blames you.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 19 — VISION & "WHO AM I" STATEMENT ══════════════ -->
+    <div class="slide" data-index="18">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Vision &amp; Your "Who Am I" Statement</div>
+      <div class="slide-rule"></div>
+      <svg viewBox="0 0 1400 380" width="1360" height="360" aria-label="Vision flow diagram">
+        <defs>
+          <linearGradient id="rasGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#FFD86A"/>
+            <stop offset="100%" stop-color="#E5942A"/>
+          </linearGradient>
+        </defs>
+        <!-- Top row: VISION → IDENTITY → WORLD -->
+        <rect x="40" y="40" width="260" height="80" rx="14" fill="#141414" stroke="#262626" stroke-width="1.5"/>
+        <text x="170" y="88" text-anchor="middle" fill="#EFEAE0" font-size="26" font-weight="900">VISION</text>
+        <line x1="302" y1="80" x2="358" y2="80" stroke="#3A3A3A" stroke-width="1.5"/>
+        <polygon points="353,74 366,80 353,86" fill="#3A3A3A"/>
+        <rect x="368" y="40" width="260" height="80" rx="14" fill="#141414" stroke="#F2C14E" stroke-width="1.5" stroke-opacity=".5"/>
+        <text x="498" y="88" text-anchor="middle" fill="#F2C14E" font-size="26" font-weight="900">IDENTITY</text>
+        <line x1="630" y1="80" x2="686" y2="80" stroke="#3A3A3A" stroke-width="1.5"/>
+        <polygon points="681,74 694,80 681,86" fill="#3A3A3A"/>
+        <rect x="696" y="40" width="260" height="80" rx="14" fill="#141414" stroke="#262626" stroke-width="1.5"/>
+        <text x="826" y="88" text-anchor="middle" fill="#EFEAE0" font-size="26" font-weight="900">WORLD</text>
+        <!-- Down arrow -->
+        <line x1="826" y1="122" x2="826" y2="172" stroke="#F2C14E" stroke-width="2" stroke-linecap="round" stroke-opacity=".6"/>
+        <polygon points="820,167 826,180 832,167" fill="#F2C14E" fill-opacity=".6"/>
+        <!-- RAS pill -->
+        <rect x="478" y="182" width="696" height="76" rx="38" fill="#1C1C10" stroke="#FFD86A" stroke-width="2.5"/>
+        <text x="826" y="230" text-anchor="middle" fill="#FFD86A" font-size="22" font-weight="900" letter-spacing="1">RETICULAR ACTIVATING SYSTEM</text>
+        <!-- Down arrow -->
+        <line x1="826" y1="260" x2="826" y2="300" stroke="#F2C14E" stroke-width="2" stroke-linecap="round" stroke-opacity=".6"/>
+        <polygon points="820,295 826,308 832,295" fill="#F2C14E" fill-opacity=".6"/>
+        <!-- Bottom row -->
+        <rect x="368" y="310" width="260" height="64" rx="14" fill="#141414" stroke="#262626" stroke-width="1.5"/>
+        <text x="498" y="349" text-anchor="middle" fill="#B8B2A4" font-size="20" font-weight="700">WHAT YOU "SEE"</text>
+        <line x1="630" y1="342" x2="686" y2="342" stroke="#3A3A3A" stroke-width="1.5"/>
+        <polygon points="681,336 694,342 681,348" fill="#3A3A3A"/>
+        <rect x="696" y="310" width="360" height="64" rx="14" fill="#141414" stroke="#F2C14E" stroke-width="1.5" stroke-opacity=".5"/>
+        <text x="876" y="349" text-anchor="middle" fill="#F2C14E" font-size="20" font-weight="700">THE OPPORTUNITIES YOU CREATE</text>
+        <!-- Left label -->
+        <text x="30" y="172" text-anchor="start" fill="#6B6558" font-size="13" font-weight="600" transform="rotate(-90 30 220)">filters reality</text>
+      </svg>
+      <div style="margin-top:24px;font-family:var(--body);font-size:22px;color:var(--muted);text-align:center;max-width:900px;">Your identity determines what your brain decides is worth noticing. Change the identity, change what you see.</div>
+    </div>
+
+    <!-- ══ SLIDE 20 — REWRITING YOUR LIMITING BELIEFS ═════════════ -->
+    <div class="slide" data-index="19">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Rewriting Your Limiting Beliefs</div>
+      <div class="slide-rule"></div>
+      <svg viewBox="0 0 1400 360" width="1360" height="340" aria-label="Belief rewriting diagram">
+        <defs>
+          <linearGradient id="beliefGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#FFD86A"/>
+            <stop offset="100%" stop-color="#E5942A"/>
+          </linearGradient>
+        </defs>
+        <!-- BELIEF pill -->
+        <rect x="540" y="30" width="320" height="72" rx="36" fill="#1C1C10" stroke="#FFD86A" stroke-width="2.5"/>
+        <text x="700" y="74" text-anchor="middle" fill="#FFD86A" font-size="28" font-weight="900" letter-spacing="1">BELIEF</text>
+        <!-- Left branch arrow -->
+        <line x1="558" y1="96" x2="340" y2="174" stroke="#3A3A3A" stroke-width="1.5" stroke-linecap="round"/>
+        <polygon points="343,167 332,180 355,178" fill="#3A3A3A"/>
+        <!-- Right branch arrow (gold) -->
+        <line x1="842" y1="96" x2="1060" y2="174" stroke="#F2C14E" stroke-width="1.5" stroke-linecap="round" stroke-opacity=".6"/>
+        <polygon points="1057,167 1068,180 1045,178" fill="#F2C14E" fill-opacity=".6"/>
+        <!-- ACCEPT card (left) -->
+        <rect x="100" y="180" width="460" height="140" rx="16" fill="#141414" stroke="#262626" stroke-width="1.5"/>
+        <text x="330" y="228" text-anchor="middle" fill="#8A8477" font-size="14" font-weight="700" letter-spacing="2">ACCEPT</text>
+        <text x="330" y="264" text-anchor="middle" fill="#EFEAE0" font-size="20" font-weight="700">Keep it.</text>
+        <text x="330" y="292" text-anchor="middle" fill="#6B6558" font-size="16" font-weight="500">It serves who you're becoming.</text>
+        <!-- REWRITE card (right, gold) -->
+        <rect x="840" y="180" width="460" height="140" rx="16" fill="#1C1C10" stroke="#FFD86A" stroke-width="2" stroke-opacity=".7"/>
+        <text x="1070" y="228" text-anchor="middle" fill="#FFD86A" font-size="14" font-weight="700" letter-spacing="2">REWRITE</text>
+        <text x="1070" y="264" text-anchor="middle" fill="#F2C14E" font-size="20" font-weight="700">Challenge it. Replace it. Rehearse it.</text>
+        <text x="1070" y="292" text-anchor="middle" fill="#8A8477" font-size="16" font-weight="500">The new belief becomes the new baseline.</text>
+      </svg>
+      <div style="margin-top:32px;font-family:var(--body);font-size:24px;color:var(--soft);text-align:center;max-width:960px;">
+        A belief is just a thought you've thought enough times to stop questioning it. That also means you can change it.
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 21 — TWO TYPES OF LIMITING BELIEFS ═══════════════ -->
+    <div class="slide glow-bg" data-index="20">
+      <div class="kicker">THE BUSINESS GROWTH GAMEPLAN™ · MINDSET</div>
+      <div class="slide-title">Two Types of Limiting Beliefs</div>
+      <div class="slide-rule"></div>
+      <div class="vs-wrap">
+        <div class="card" style="flex:1;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:12px;">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="3" stroke="#F2C14E" stroke-width="1.75"/>
+          </svg>
+          <div class="card-label">Limiting Beliefs</div>
+          <div class="card-title" style="font-size:38px;">Surface-level stories.</div>
+          <div class="card-body" style="margin-top:14px;">"I'm not good enough." "I don't have time." "That's not for people like me."</div>
+          <div style="margin-top:20px;width:48px;height:2px;background:var(--line);border-radius:2px;"></div>
+          <div class="card-body" style="color:var(--muted-2);font-size:20px;margin-top:16px;">What you can't do. Usually visible. Easier to work with.</div>
+        </div>
+        <div class="vs-pill">VS</div>
+        <div class="card gold-accent" style="flex:1;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin-bottom:12px;">
+            <circle cx="12" cy="12" r="10" stroke="#F2C14E" stroke-width="1.75"/>
+            <line x1="12" y1="8" x2="12" y2="12" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <line x1="12" y1="16" x2="12.01" y2="16" stroke="#F2C14E" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div class="card-label" style="color:var(--gold-hi);">Core Beliefs</div>
+          <div class="card-title" style="font-size:38px;">The deep operating system.</div>
+          <div class="card-body" style="margin-top:14px;">Identity-level. "I am not the kind of person who..." These run everything above them.</div>
+          <div style="margin-top:20px;width:48px;height:2px;background:rgba(242,193,78,.3);border-radius:2px;"></div>
+          <div class="card-body" style="color:var(--gold);font-size:20px;margin-top:16px;">Change these and everything above shifts.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /#deck -->
+</div><!-- /#stage -->
+
+<div id="counter">01 / 21</div>
+<div id="progress-track"><div id="progress-fill"></div></div>
+
+<script>
+(function () {
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  const fill = document.getElementById('progress-fill');
+  const hint = document.getElementById('hint');
+  const total = slides.length;
+  let cur = 0;
+  let hintTimer = null;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function go(idx) {
+    if (idx < 0 || idx >= total) return;
+    slides[cur].classList.remove('active');
+    cur = idx;
+    slides[cur].classList.add('active');
+    counter.textContent = pad(cur + 1) + ' / ' + pad(total);
+    fill.style.width = ((cur + 1) / total * 100) + '%';
+  }
+
+  // Hint auto-hide
+  function showHint() {
+    hint.classList.remove('gone');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function () { hint.classList.add('gone'); }, 3000);
+  }
+  showHint();
+
+  // Keyboard
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(cur + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); go(0); }
+    else if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+    else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+    else if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+    showHint();
+  });
+
+  // Touch swipe
+  let tx = 0;
+  document.addEventListener('touchstart', function (e) { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) { go(dx < 0 ? cur + 1 : cur - 1); }
+  }, { passive: true });
+
+  // Scale 16:9 deck to viewport
+  const deck = document.getElementById('deck');
+  function scale() {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const s = Math.min(vw / 1920, vh / 1080);
+    const W = Math.round(1920 * s), H = Math.round(1080 * s);
+    deck.style.transform = 'scale(' + s + ')';
+    deck.style.left = Math.round((vw - W) / 2) + 'px';
+    deck.style.top = Math.round((vh - H) / 2) + 'px';
+    deck.style.position = 'absolute';
+  }
+  scale();
+  window.addEventListener('resize', scale);
+})();
+</script>
+</body>
+</html>
