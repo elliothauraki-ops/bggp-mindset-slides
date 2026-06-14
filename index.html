@@ -828,85 +828,117 @@ html, body {
 
 
 /* ════════════════════════════════════════════════════════════════════
-   SLIDE 11 — CONE OF LEARNING
+   SLIDE 11 — CONE OF LEARNING (triangle pyramid)
 ════════════════════════════════════════════════════════════════════ */
 .cone-wrap {
   display: flex;
   align-items: center;
-  gap: 80px;
+  gap: 40px;
   width: 100%;
   max-width: 1820px;
 }
-.cone-left {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+/* Triangle container — SVG clips the shape, HTML labels overlay.
+   Width = 740px triangle + 320px right-annotation column */
+.cone-pyramid-area {
+  flex: 0 0 1060px;
+  position: relative;
+  width: 1060px;
+  height: 620px;
 }
-/* Each row is a bar with label + percentage */
-.cone-row {
+.cone-pyramid-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+}
+/* HTML label rows — absolutely positioned over each band */
+.cone-band-labels {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.cone-band-row {
+  position: absolute;
+  left: 0; right: 0;
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--line-soft);
-  position: relative;
+  justify-content: center;
 }
-.cone-pct {
+.cone-band-text {
+  font-family: var(--display);
+  font-weight: 800;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.1;
+  color: var(--text);
+}
+/* Right-side annotation column */
+.cone-annotations {
+  position: absolute;
+  right: -260px;
+  top: 0;
+  width: 240px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+.cone-ann-band {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cone-ann-pct {
   font-family: var(--display);
   font-weight: 900;
-  font-size: 48px;
-  letter-spacing: -1px;
+  font-size: 28px;
+  letter-spacing: -0.5px;
   color: var(--muted);
-  min-width: 110px;
+  min-width: 52px;
   text-align: right;
   flex-shrink: 0;
 }
-.cone-bar-track {
-  flex: 1;
-  height: 28px;
-  background: var(--surface);
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-}
-.cone-bar-fill {
-  height: 100%;
-  background: var(--surface-2);
-  border-radius: 6px;
-  transition: width 0s;
-}
-.cone-row-label {
+.cone-ann-pct.active-pct { color: var(--gold); }
+.cone-ann-label {
   font-family: var(--body);
   font-weight: 600;
-  font-size: 30px;
-  color: var(--soft);
-  min-width: 340px;
-  flex-shrink: 0;
+  font-size: 19px;
+  color: var(--muted);
+  line-height: 1.25;
+  text-transform: uppercase;
 }
-/* Active rows (bottom half) */
-.cone-row.active-row .cone-pct { color: var(--gold); }
-.cone-row.active-row .cone-bar-fill { background: rgba(242,193,78,.25); }
-.cone-row.active-row .cone-row-label { color: var(--text); }
-.cone-row.top-row .cone-pct { font-size: 40px; color: var(--muted-2); }
-/* Group labels */
-.cone-group-label {
+.cone-ann-label.active-label { color: var(--soft); }
+/* PASSIVE / ACTIVE side labels */
+.cone-side-label {
+  position: absolute;
+  right: -330px;
   font-family: var(--display);
   font-weight: 700;
-  font-size: 18px;
+  font-size: 14px;
   letter-spacing: 4px;
   text-transform: uppercase;
-  padding: 10px 0 4px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.cone-group-label.passive { color: var(--muted-2); }
-.cone-group-label.active  { color: var(--gold); opacity: 0.7; }
-/* Right: quote */
+.cone-side-passive {
+  color: var(--muted-2);
+  top: 0;
+}
+.cone-side-active {
+  color: var(--gold);
+  opacity: 0.75;
+  bottom: 0;
+}
+/* Right: quote card */
 .cone-right {
-  flex: 0 0 440px;
+  flex: 0 0 400px;
   display: flex;
   flex-direction: column;
   gap: 28px;
-  padding: 52px 52px 52px 52px;
+  padding: 52px 48px;
   background: var(--surface);
   border: 1px solid rgba(242,193,78,.35);
   border-top: 3px solid var(--gold);
@@ -915,7 +947,7 @@ html, body {
 .cone-quote-text {
   font-family: var(--body);
   font-weight: 600;
-  font-size: 34px;
+  font-size: 32px;
   line-height: 1.55;
   color: var(--text);
   font-style: italic;
@@ -1122,62 +1154,95 @@ html, body {
 
 
 /* ════════════════════════════════════════════════════════════════════
-   SLIDE 15 — SKILL ASCENSION & LAW OF AVERAGES (ascending staircase)
+   SLIDE 15 — SKILL ASCENSION & LAW OF AVERAGES (equal skills + outcome)
 ════════════════════════════════════════════════════════════════════ */
-/* Same staircase pattern as s10/s14, different content */
-.skill-stair-wrap {
+.skill-row-wrap {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   gap: 0;
   width: 100%;
   max-width: 1820px;
-  height: 600px;
 }
-.skill-step {
+.skill-equal-box {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-}
-.skill-block {
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 16px 16px 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px 16px;
+  padding: 60px 32px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
   position: relative;
+  overflow: hidden;
+  min-height: 320px;
 }
-.skill-block::before {
+.skill-equal-box::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 3px;
   background: var(--line);
-  border-radius: 16px 16px 0 0;
+  border-radius: 20px 20px 0 0;
 }
-.skill-step:last-child .skill-block::before {
-  background: var(--gold-grad);
-}
-.skill-step:last-child .skill-block {
-  border-color: rgba(242,193,78,.35);
-  background: rgba(242,193,78,.05);
-}
-.skill-text {
+.skill-equal-text {
   font-family: var(--display);
   font-weight: 900;
-  font-size: 52px;
-  letter-spacing: -1px;
+  font-size: 60px;
+  letter-spacing: -1.5px;
   line-height: 1.1;
   color: var(--soft);
   text-align: center;
   text-transform: uppercase;
 }
-.skill-step:last-child .skill-text { color: var(--gold); }
+/* Arrow between skills and outcome */
+.skill-outcome-arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+}
+/* Outcome box — gold, slightly taller */
+.skill-outcome-box {
+  flex: 0 0 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  background: rgba(242,193,78,.05);
+  border: 2px solid var(--gold);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  min-height: 360px;
+}
+.skill-outcome-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold-grad);
+  border-radius: 20px 20px 0 0;
+}
+.skill-outcome-text {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 60px;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  color: var(--gold);
+  text-align: center;
+  text-transform: uppercase;
+}
+/* Small connector between equal skill boxes */
+.skill-box-connector {
+  flex-shrink: 0;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 
 /* ════════════════════════════════════════════════════════════════════
@@ -1335,14 +1400,14 @@ html, body {
   justify-content: center;
   font-family: var(--display);
   font-weight: 900;
-  font-size: 46px;
+  font-size: 42px;
   letter-spacing: -1px;
   text-transform: uppercase;
   text-align: center;
   line-height: 1.15;
 }
 .vision-circle {
-  width: 240px; height: 240px;
+  width: 220px; height: 220px;
   border-radius: 50%;
   border: 2.5px solid rgba(242,193,78,.4);
   background: var(--surface);
@@ -1356,50 +1421,71 @@ html, body {
 }
 .vision-rect {
   padding: 32px 44px;
-  border: 2.5px solid rgba(242,193,78,.4);
+  border: 2.5px solid var(--gold);
   border-radius: 16px;
-  background: var(--surface);
-  color: var(--text);
+  background: rgba(242,193,78,.04);
+  color: var(--gold);
   flex-shrink: 0;
   min-width: 260px;
 }
-.vision-rect.gold-node {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-.vision-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
-}
-.vision-stack-item {
-  padding: 24px 36px;
-  border: 1.5px solid rgba(242,193,78,.3);
-  border-radius: 12px;
-  background: var(--surface);
-  font-family: var(--display);
-  font-weight: 800;
-  font-size: 36px;
-  letter-spacing: -0.5px;
-  color: var(--soft);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.vision-stack-item:first-child {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-bottom: none;
-}
-.vision-stack-item:last-child {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
+/* Left input stack: VISION + IDENTITY circles with vertical connector */
 .vision-input-stack {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 0;
+  flex-shrink: 0;
+}
+.vision-stack-connector-v {
+  width: 2.5px;
+  height: 28px;
+  background: rgba(242,193,78,.5);
+  flex-shrink: 0;
+}
+/* Right output stack: WHAT YOU SEE + OPPORTUNITIES — two separated boxes */
+.vision-output-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  flex-shrink: 0;
+}
+.vision-output-item {
+  padding: 28px 36px;
+  border: 2px solid rgba(242,193,78,.4);
+  border-radius: 14px;
+  background: var(--surface);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 32px;
+  letter-spacing: -0.5px;
+  color: var(--soft);
+  text-transform: uppercase;
+  white-space: nowrap;
+  min-width: 380px;
+  text-align: center;
+  line-height: 1.2;
+}
+.vision-output-item.gold-output {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(242,193,78,.04);
+}
+.vision-output-gap {
+  height: 24px;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.vision-output-gap::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 50%;
+  width: 2.5px;
+  background: rgba(242,193,78,.4);
+  transform: translateX(-50%);
 }
 /* Connector lines */
 .vision-connector {
@@ -1407,69 +1493,50 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 72px;
+}
+/* Fan connector SVG from single point into two branches */
+.vision-fan-connector {
+  flex-shrink: 0;
   width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
 /* ════════════════════════════════════════════════════════════════════
-   SLIDE 20 — REWRITING YOUR LIMITING BELIEFS (branch diagram)
+   SLIDE 20 — REWRITING YOUR LIMITING BELIEFS (three equal boxes)
 ════════════════════════════════════════════════════════════════════ */
-.belief-wrap {
+.belief-row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
+  align-items: stretch;
+  justify-content: center;
+  gap: 48px;
   width: 100%;
-  max-width: 1400px;
+  max-width: 1600px;
 }
-.belief-top {
-  display: flex;
-  justify-content: center;
-}
-.belief-node {
+.belief-box {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px 80px;
+  padding: 60px 40px;
   background: var(--surface);
-  border: 2px solid rgba(242,193,78,.5);
-  border-radius: 16px;
+  border: 2px solid rgba(242,193,78,.4);
+  border-radius: 20px;
   font-family: var(--display);
   font-weight: 900;
-  font-size: 72px;
-  letter-spacing: -2px;
-  color: var(--text);
-  text-transform: uppercase;
-}
-.belief-connector-area {
-  position: relative;
-  width: 100%;
-  height: 100px;
-}
-.belief-bottom {
-  display: flex;
-  gap: 120px;
-  justify-content: center;
-  width: 100%;
-}
-.belief-leaf {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 36px 80px;
-  background: var(--surface);
-  border: 2px solid var(--line);
-  border-radius: 16px;
-  font-family: var(--display);
-  font-weight: 900;
-  font-size: 80px;
+  font-size: 88px;
   letter-spacing: -2px;
   color: var(--soft);
   text-transform: uppercase;
-  min-width: 360px;
+  text-align: center;
+  min-height: 320px;
 }
-.belief-leaf.rewrite {
+.belief-box.rewrite {
   border-color: var(--gold);
+  border-width: 2px;
   color: var(--gold);
   background: rgba(242,193,78,.04);
 }
@@ -2003,61 +2070,126 @@ html, body {
 
 
     <!-- ══════════════════════════════════════════════════════════════
-         SLIDE 11 — CONE OF LEARNING
+         SLIDE 11 — CONE OF LEARNING (triangle pyramid)
     ══════════════════════════════════════════════════════════════════ -->
     <div class="slide" data-index="10">
 
       <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
 
-      <div class="slide-title">Cone of Learning</div>
+      <div class="slide-title" style="font-size:80px; margin-bottom:28px;">Cone of Learning</div>
 
-      <div class="cone-wrap">
+      <div class="cone-wrap" style="align-items:flex-start; padding-top:8px;">
 
-        <!-- Left: stacked bars -->
-        <div class="cone-left">
+        <!-- Triangle pyramid -->
+        <div class="cone-pyramid-area">
 
-          <div class="cone-group-label passive">PASSIVE</div>
+          <!-- SVG triangle clipped into bands -->
+          <svg class="cone-pyramid-svg" viewBox="0 0 740 620" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <defs>
+              <!-- Clip path: the full triangle silhouette -->
+              <clipPath id="triClip">
+                <polygon points="370,0 740,620 0,620"/>
+              </clipPath>
+            </defs>
 
-          <div class="cone-row top-row">
-            <div class="cone-pct">10%</div>
-            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:10%;"></div></div>
-            <div class="cone-row-label">READING</div>
+            <!-- Band fills, clipped to triangle. Heights (0-620) split 6 bands proportionally -->
+            <!-- Band 1: 0–103 (top ~16.7%) — darkest -->
+            <rect x="0" y="0" width="740" height="103" fill="#1A1A1A" clip-path="url(#triClip)"/>
+            <!-- Band 2: 103–207 -->
+            <rect x="0" y="103" width="740" height="104" fill="#1E1C17" clip-path="url(#triClip)"/>
+            <!-- Band 3: 207–310 -->
+            <rect x="0" y="207" width="740" height="103" fill="#252110" clip-path="url(#triClip)"/>
+            <!-- Band 4: 310–414 -->
+            <rect x="0" y="310" width="740" height="104" fill="#2E2710" clip-path="url(#triClip)"/>
+            <!-- Band 5: 414–517 -->
+            <rect x="0" y="414" width="740" height="103" fill="#3B3110" clip-path="url(#triClip)"/>
+            <!-- Band 6: 517–620 — fully gold -->
+            <rect x="0" y="517" width="740" height="103" fill="rgba(242,193,78,0.28)" clip-path="url(#triClip)"/>
+
+            <!-- Hairline band dividers (horizontal, clipped) -->
+            <line x1="0" y1="103" x2="740" y2="103" stroke="rgba(242,193,78,.18)" stroke-width="1" clip-path="url(#triClip)"/>
+            <line x1="0" y1="207" x2="740" y2="207" stroke="rgba(242,193,78,.18)" stroke-width="1" clip-path="url(#triClip)"/>
+            <line x1="0" y1="310" x2="740" y2="310" stroke="rgba(242,193,78,.2)" stroke-width="1" clip-path="url(#triClip)"/>
+            <line x1="0" y1="414" x2="740" y2="414" stroke="rgba(242,193,78,.25)" stroke-width="1" clip-path="url(#triClip)"/>
+            <line x1="0" y1="517" x2="740" y2="517" stroke="rgba(242,193,78,.35)" stroke-width="1" clip-path="url(#triClip)"/>
+
+            <!-- Triangle outline -->
+            <polygon points="370,2 738,618 2,618" fill="none" stroke="rgba(242,193,78,.5)" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+
+          <!-- HTML text labels overlaid on each band -->
+          <div class="cone-band-labels">
+            <!-- Band 1: centre y = 51.5 (0+103)/2 -->
+            <div class="cone-band-row" style="top:38px; height:52px;">
+              <div class="cone-band-text" style="font-size:22px; color:var(--muted); letter-spacing:1px;">READING</div>
+            </div>
+            <!-- Band 2: centre y = 155 -->
+            <div class="cone-band-row" style="top:130px; height:58px;">
+              <div class="cone-band-text" style="font-size:22px; color:var(--muted); letter-spacing:1px;">HEARING WORDS</div>
+            </div>
+            <!-- Band 3: centre y = 258 -->
+            <div class="cone-band-row" style="top:228px; height:58px;">
+              <div class="cone-band-text" style="font-size:23px; color:var(--soft); letter-spacing:1px;">SEEING</div>
+            </div>
+            <!-- Band 4: centre y = 362 -->
+            <div class="cone-band-row" style="top:324px; height:64px;">
+              <div class="cone-band-text" style="font-size:21px; color:var(--soft); letter-spacing:0.5px; max-width:360px;">WATCHING A<br>DEMONSTRATION</div>
+            </div>
+            <!-- Band 5: centre y = 465 -->
+            <div class="cone-band-row" style="top:424px; height:66px;">
+              <div class="cone-band-text" style="font-size:19px; color:var(--text); letter-spacing:0.5px; max-width:400px;">PARTICIPATING IN A DISCUSSION<br>/ GIVING A TALK</div>
+            </div>
+            <!-- Band 6: centre y = 568 -->
+            <div class="cone-band-row" style="top:528px; height:72px;">
+              <div class="cone-band-text" style="font-size:23px; color:var(--gold); font-weight:900; letter-spacing:1px;">DOING THE REAL THING</div>
+            </div>
           </div>
-          <div class="cone-row top-row">
-            <div class="cone-pct">20%</div>
-            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:20%;"></div></div>
-            <div class="cone-row-label">HEARING</div>
-          </div>
-          <div class="cone-row top-row">
-            <div class="cone-pct">30%</div>
-            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:30%;"></div></div>
-            <div class="cone-row-label">SEEING</div>
-          </div>
-          <div class="cone-row top-row">
-            <div class="cone-pct">50%</div>
-            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:50%;"></div></div>
-            <div class="cone-row-label">WATCHING A DEMONSTRATION</div>
-          </div>
 
-          <div class="cone-group-label active" style="margin-top:16px;">ACTIVE</div>
+          <!-- Right-side annotations: pct + descriptor -->
+          <div style="position:absolute; left:752px; top:0; width:290px; height:620px; display:flex; flex-direction:column;">
+            <!-- Each entry is positioned at the band midpoint -->
+            <div style="position:absolute; top:28px; display:flex; align-items:center; gap:10px;">
+              <span style="font-family:var(--display); font-weight:900; font-size:26px; color:var(--muted-2); min-width:52px; text-align:right;">10%</span>
+              <span style="font-family:var(--body); font-weight:600; font-size:17px; color:var(--muted); text-transform:uppercase; line-height:1.2;">of what we READ</span>
+            </div>
+            <div style="position:absolute; top:128px; display:flex; align-items:center; gap:10px;">
+              <span style="font-family:var(--display); font-weight:900; font-size:26px; color:var(--muted); min-width:52px; text-align:right;">20%</span>
+              <span style="font-family:var(--body); font-weight:600; font-size:17px; color:var(--muted); text-transform:uppercase; line-height:1.2;">of what we HEAR</span>
+            </div>
+            <div style="position:absolute; top:228px; display:flex; align-items:center; gap:10px;">
+              <span style="font-family:var(--display); font-weight:900; font-size:26px; color:var(--muted); min-width:52px; text-align:right;">30%</span>
+              <span style="font-family:var(--body); font-weight:600; font-size:17px; color:var(--soft); text-transform:uppercase; line-height:1.2;">of what we SEE</span>
+            </div>
+            <div style="position:absolute; top:330px; display:flex; align-items:center; gap:10px;">
+              <span style="font-family:var(--display); font-weight:900; font-size:26px; color:var(--soft); min-width:52px; text-align:right;">50%</span>
+              <span style="font-family:var(--body); font-weight:600; font-size:17px; color:var(--soft); text-transform:uppercase; line-height:1.2;">of what we SEE &amp; HEAR</span>
+            </div>
+            <div style="position:absolute; top:432px; display:flex; align-items:center; gap:10px;">
+              <span style="font-family:var(--display); font-weight:900; font-size:26px; color:var(--gold); min-width:52px; text-align:right;">70%</span>
+              <span style="font-family:var(--body); font-weight:600; font-size:17px; color:var(--soft); text-transform:uppercase; line-height:1.2;">of what we SAY</span>
+            </div>
+            <div style="position:absolute; top:536px; display:flex; align-items:center; gap:10px;">
+              <span style="font-family:var(--display); font-weight:900; font-size:28px; color:var(--gold-hi); min-width:52px; text-align:right;">90%</span>
+              <span style="font-family:var(--body); font-weight:700; font-size:17px; color:var(--gold); text-transform:uppercase; line-height:1.2;">of what we DO</span>
+            </div>
 
-          <div class="cone-row active-row">
-            <div class="cone-pct">70%</div>
-            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:70%;"></div></div>
-            <div class="cone-row-label">DISCUSSING &amp; PARTICIPATING</div>
-          </div>
-          <div class="cone-row active-row">
-            <div class="cone-pct">90%</div>
-            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:90%;"></div></div>
-            <div class="cone-row-label">DOING THE REAL THING</div>
+            <!-- PASSIVE / ACTIVE bracket labels -->
+            <div style="position:absolute; right:-52px; top:0; height:310px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;">
+              <div style="width:3px; height:280px; background:rgba(242,193,78,.2); border-radius:2px;"></div>
+              <span style="font-family:var(--display); font-weight:700; font-size:13px; letter-spacing:3px; text-transform:uppercase; color:var(--muted-2); writing-mode:vertical-rl; transform:rotate(180deg); position:absolute; right:-24px; top:50%; transform:translateY(-50%) rotate(180deg);">PASSIVE</span>
+            </div>
+            <div style="position:absolute; right:-52px; top:310px; height:310px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;">
+              <div style="width:3px; height:280px; background:rgba(242,193,78,.4); border-radius:2px;"></div>
+              <span style="font-family:var(--display); font-weight:700; font-size:13px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); opacity:0.75; writing-mode:vertical-rl; position:absolute; right:-24px; top:50%; transform:translateY(-50%) rotate(180deg);">ACTIVE</span>
+            </div>
           </div>
 
         </div>
 
-        <!-- Right: Confucius quote -->
-        <div class="cone-right">
+        <!-- Confucius quote card -->
+        <div class="cone-right" style="margin-top:20px;">
           <div class="cone-quote-text">"I see and I forget. I hear and I remember. I do and I understand."</div>
-          <div class="cone-quote-attr">Confucius</div>
+          <div class="cone-quote-attr">— Confucius</div>
         </div>
 
       </div>
@@ -2248,57 +2380,50 @@ html, body {
 
       <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
 
-      <div class="slide-title" style="font-size:80px; letter-spacing:-1px;">Skill Ascension &amp; The Law of Averages</div>
+      <div class="slide-title" style="font-size:80px; letter-spacing:-1px; margin-bottom:56px;">Skill Ascension &amp; The Law of Averages</div>
 
-      <div class="skill-stair-wrap">
+      <div class="skill-row-wrap">
 
-        <!-- Step 1 — MARKETING -->
-        <div class="skill-step">
-          <div class="skill-block" style="height:160px;">
-            <div class="skill-text">MARKETING</div>
-          </div>
+        <!-- MARKETING — equal skill box -->
+        <div class="skill-equal-box">
+          <div class="skill-equal-text">MARKETING</div>
         </div>
 
-        <div class="stair-connector">
-          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
-            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
-            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <!-- small connector dot between skill boxes -->
+        <div class="skill-box-connector">
+          <svg viewBox="0 0 28 28" width="28" height="28" fill="none" aria-hidden="true">
+            <circle cx="14" cy="14" r="3" fill="rgba(242,193,78,.35)"/>
           </svg>
         </div>
 
-        <!-- Step 2 — APPOINTMENT SETTING -->
-        <div class="skill-step">
-          <div class="skill-block" style="height:280px;">
-            <div class="skill-text">APPOINTMENT<br>SETTING</div>
-          </div>
+        <!-- APPOINTMENT SETTING — equal skill box -->
+        <div class="skill-equal-box">
+          <div class="skill-equal-text">APPOINTMENT<br>SETTING</div>
         </div>
 
-        <div class="stair-connector">
-          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
-            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
-            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <!-- small connector dot -->
+        <div class="skill-box-connector">
+          <svg viewBox="0 0 28 28" width="28" height="28" fill="none" aria-hidden="true">
+            <circle cx="14" cy="14" r="3" fill="rgba(242,193,78,.35)"/>
           </svg>
         </div>
 
-        <!-- Step 3 — CLOSING -->
-        <div class="skill-step">
-          <div class="skill-block" style="height:400px;">
-            <div class="skill-text">CLOSING</div>
-          </div>
+        <!-- CLOSING — equal skill box -->
+        <div class="skill-equal-box">
+          <div class="skill-equal-text">CLOSING</div>
         </div>
 
-        <div class="stair-connector">
-          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
-            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
-            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <!-- Arrow to outcome -->
+        <div class="skill-outcome-arrow">
+          <svg viewBox="0 0 100 48" width="100" height="48" fill="none" aria-hidden="true">
+            <line x1="6" y1="24" x2="78" y2="24" stroke="#F2C14E" stroke-width="3" stroke-linecap="round"/>
+            <polyline points="62,10 78,24 62,38" stroke="#F2C14E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
           </svg>
         </div>
 
-        <!-- Step 4 — CLIENTS = $$$, gold -->
-        <div class="skill-step">
-          <div class="skill-block" style="height:540px;">
-            <div class="skill-text">CLIENTS<br>= $$$</div>
-          </div>
+        <!-- CLIENTS = $$$ — outcome box -->
+        <div class="skill-outcome-box">
+          <div class="skill-outcome-text">CLIENTS<br>= $$$</div>
         </div>
 
       </div>
@@ -2468,51 +2593,57 @@ html, body {
 
       <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
 
-      <div class="slide-title" style="font-size:76px; margin-bottom:52px;">Vision &amp; Your "Who Am I" Statement</div>
+      <div class="slide-title" style="font-size:72px; margin-bottom:60px;">Vision &amp; Your "Who Am I" Statement</div>
 
       <div class="vision-wrap">
 
-        <!-- VISION + IDENTITY stacked circles -->
+        <!-- VISION + IDENTITY stacked circles with vertical connector -->
         <div class="vision-input-stack">
-          <div class="vision-circle vision-node gold-node" style="width:200px; height:200px; font-size:36px;">VISION</div>
-          <div style="height:20px;"></div>
-          <div class="vision-circle vision-node" style="width:200px; height:200px; font-size:32px;">IDENTITY</div>
+          <div class="vision-circle vision-node gold-node" style="width:200px; height:200px; font-size:34px;">VISION</div>
+          <div class="vision-stack-connector-v"></div>
+          <div class="vision-circle vision-node" style="width:200px; height:200px; font-size:30px;">IDENTITY</div>
         </div>
 
-        <!-- Connector 1 -->
-        <div class="vision-connector">
-          <svg viewBox="0 0 80 40" width="80" height="40" fill="none" aria-hidden="true">
-            <line x1="4" y1="20" x2="64" y2="20" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
-            <polyline points="52,8 64,20 52,32" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <!-- Fan connector: two circles → one RAS box.
+             SVG height 428 matches stack height (200+28+200).
+             Top circle centre y=100, bottom circle centre y=328, midpoint y=214 -->
+        <div class="vision-fan-connector" style="width:80px;">
+          <svg viewBox="0 0 80 428" width="80" height="428" fill="none" aria-hidden="true" style="flex-shrink:0;">
+            <line x1="0" y1="100" x2="52" y2="214" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="0" y1="328" x2="52" y2="214" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="52" y1="214" x2="80" y2="214" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+            <polyline points="66,202 80,214 66,226" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
           </svg>
         </div>
 
         <!-- RETICULAR ACTIVATING SYSTEM box -->
-        <div class="vision-rect vision-node" style="font-size:34px; padding:36px 48px; text-align:center; min-width:320px;">RETICULAR<br>ACTIVATING<br>SYSTEM</div>
+        <div class="vision-rect vision-node" style="font-size:30px; padding:32px 44px; text-align:center; min-width:280px; line-height:1.3;">RETICULAR<br>ACTIVATING<br>SYSTEM</div>
 
-        <!-- Connector 2 -->
+        <!-- Connector → WORLD -->
         <div class="vision-connector">
-          <svg viewBox="0 0 80 40" width="80" height="40" fill="none" aria-hidden="true">
-            <line x1="4" y1="20" x2="64" y2="20" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
-            <polyline points="52,8 64,20 52,32" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <svg viewBox="0 0 72 40" width="72" height="40" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="56" y2="20" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+            <polyline points="44,8 56,20 44,32" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
           </svg>
         </div>
 
         <!-- WORLD circle -->
-        <div class="vision-circle vision-node" style="width:220px; height:220px; font-size:40px; flex-shrink:0;">WORLD</div>
+        <div class="vision-circle vision-node" style="width:210px; height:210px; font-size:36px; flex-shrink:0;">WORLD</div>
 
-        <!-- Connector 3 -->
-        <div class="vision-connector">
-          <svg viewBox="0 0 80 40" width="80" height="40" fill="none" aria-hidden="true">
-            <line x1="4" y1="20" x2="64" y2="20" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
-            <polyline points="52,8 64,20 52,32" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <!-- Fan connector: WORLD → two output boxes -->
+        <div class="vision-fan-connector" style="width:88px;">
+          <svg viewBox="0 0 88 240" width="88" height="240" fill="none" aria-hidden="true" style="flex-shrink:0;">
+            <line x1="0" y1="120" x2="28" y2="120" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="28" y1="120" x2="88" y2="60" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="28" y1="120" x2="88" y2="180" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
           </svg>
         </div>
 
-        <!-- Output stack -->
-        <div class="vision-stack">
-          <div class="vision-stack-item" style="color:var(--gold);">WHAT YOU "SEE"</div>
-          <div class="vision-stack-item">THE OPPORTUNITIES<br>YOU CREATE</div>
+        <!-- Right output: two cleanly separated boxes -->
+        <div class="vision-output-stack">
+          <div class="vision-output-item gold-output">WHAT YOU "SEE"</div>
+          <div class="vision-output-gap"></div>
+          <div class="vision-output-item">THE OPPORTUNITIES<br>YOU CREATE</div>
         </div>
 
       </div>
@@ -2529,29 +2660,12 @@ html, body {
 
       <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
 
-      <div class="slide-title" style="font-size:80px;">Rewriting Your Limiting Beliefs</div>
+      <div class="slide-title" style="font-size:80px; margin-bottom:72px;">Rewriting Your Limiting Beliefs</div>
 
-      <div class="belief-wrap">
-
-        <!-- BELIEF — root node -->
-        <div class="belief-top">
-          <div class="belief-node">BELIEF</div>
-        </div>
-
-        <!-- SVG connectors — two branches -->
-        <div class="belief-connector-area">
-          <svg viewBox="0 0 1400 100" width="100%" height="100" preserveAspectRatio="none" aria-hidden="true" style="position:absolute;top:0;left:0;">
-            <line x1="700" y1="0" x2="350" y2="100" stroke="rgba(242,193,78,.45)" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="700" y1="0" x2="1050" y2="100" stroke="rgba(242,193,78,.45)" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-
-        <!-- ACCEPT + REWRITE -->
-        <div class="belief-bottom">
-          <div class="belief-leaf">ACCEPT</div>
-          <div class="belief-leaf rewrite">REWRITE</div>
-        </div>
-
+      <div class="belief-row">
+        <div class="belief-box">BELIEF</div>
+        <div class="belief-box">ACCEPT</div>
+        <div class="belief-box rewrite">REWRITE</div>
       </div>
 
       <div class="brand-mark">Elliot Hauraki</div>
