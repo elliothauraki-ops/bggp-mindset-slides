@@ -1,0 +1,2673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BGGP Mindset — Full Deck — Elliot Hauraki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ─── TOKENS ────────────────────────────────────────────────────────── */
+:root {
+  --bg:         #0A0A0A;
+  --surface:    #141414;
+  --surface-2:  #1C1C1C;
+  --line:       #262626;
+  --line-soft:  #1F1F1F;
+
+  --gold:       #F2C14E;
+  --gold-hi:    #FFD86A;
+  --gold-lo:    #E5942A;
+  --gold-glow:  rgba(242,193,78,.10);
+  --gold-grad:  linear-gradient(45deg, #FFD86A 0%, #F2C14E 50%, #E5942A 100%);
+
+  --text:       #EFEAE0;
+  --soft:       #B8B2A4;
+  --muted:      #8A8477;
+  --muted-2:    #6B6558;
+
+  --display:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --body:       'Quicksand', 'Inter', sans-serif;
+}
+
+/* ─── RESET ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: #050505;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── STAGE: 16:9 letterbox ─────────────────────────────────────────── */
+#stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050505;
+}
+
+#deck {
+  position: relative;
+  background: var(--bg);
+  overflow: hidden;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: top left;
+}
+
+/* ─── SLIDES ─────────────────────────────────────────────────────────── */
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 48px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 240ms cubic-bezier(0.16,1,0.3,1);
+  background:
+    radial-gradient(ellipse 55% 50% at 50% 50%, rgba(242,193,78,0.14), transparent 65%),
+    var(--bg);
+  overflow: hidden;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ─── MODULE KICKER ──────────────────────────────────────────────────── */
+.kicker {
+  position: absolute;
+  top: 36px;
+  left: 52px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.7;
+}
+
+/* ─── SLIDE COUNTER ──────────────────────────────────────────────────── */
+.slide-num {
+  position: absolute;
+  bottom: 32px;
+  right: 52px;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 2px;
+  color: var(--muted-2);
+}
+
+/* ─── BRAND MARK ─────────────────────────────────────────────────────── */
+.brand-mark {
+  position: absolute;
+  bottom: 32px;
+  left: 52px;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  opacity: 0.5;
+}
+
+/* ─── GOLD RULE ──────────────────────────────────────────────────────── */
+.rule {
+  width: 56px;
+  height: 2px;
+  background: var(--gold-grad);
+  border-radius: 2px;
+}
+
+/* ─── GLOBAL COUNTER (fixed) ────────────────────────────────────────── */
+#counter {
+  position: fixed;
+  bottom: 20px;
+  right: 28px;
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--muted-2);
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* ─── PROGRESS BAR ───────────────────────────────────────────────────── */
+#progress-track {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--line-soft);
+  z-index: 100;
+  pointer-events: none;
+}
+#progress-fill {
+  height: 100%;
+  background: var(--gold-grad);
+  transition: width 240ms cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ─── KEYBOARD HINT ──────────────────────────────────────────────────── */
+#hint {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: rgba(10,10,10,.92);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  z-index: 200;
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+#hint.gone {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+.hint-key {
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hint-key kbd {
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--soft);
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+
+/* ─── SHARED CONTENT TITLE ────────────────────────────────────────────── */
+.slide-title {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 96px;
+  letter-spacing: -2px;
+  color: var(--text);
+  text-align: center;
+  line-height: 1;
+  text-transform: uppercase;
+  margin-bottom: 44px;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 1 — COVER
+════════════════════════════════════════════════════════════════════ */
+
+.cover-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(242,193,78,.06) 0%, transparent 65%),
+    var(--bg);
+}
+.cover-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 60px,
+    rgba(242,193,78,.018) 60px,
+    rgba(242,193,78,.018) 61px
+  );
+  pointer-events: none;
+}
+.cover-series {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 7px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 36px;
+  text-align: center;
+}
+.cover-module {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 280px;
+  letter-spacing: -10px;
+  line-height: 0.88;
+  text-align: center;
+  color: var(--gold);
+}
+.cover-brand {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  margin-top: 52px;
+  text-align: center;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 2 — EMOTIONAL ROLLERCOASTER
+════════════════════════════════════════════════════════════════════ */
+.rc-wrap {
+  display: flex;
+  align-items: center;
+  gap: 72px;
+  width: 100%;
+  max-width: 1820px;
+}
+.rc-chart-area {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+.rc-axis-y, .rc-axis-x {
+  position: absolute;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: 6px;
+  color: #C9A23E;
+  pointer-events: none;
+}
+.rc-axis-y {
+  left: 38px;
+  top: 284px;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  transform-origin: center;
+}
+.rc-axis-x {
+  left: 484px;
+  top: 556px;
+  transform: translateX(-50%);
+}
+.rc-legend {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.rc-legend-item {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+}
+.rc-num {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 32px;
+  color: var(--gold);
+  min-width: 36px;
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
+}
+.rc-label {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 38px;
+  color: var(--soft);
+  line-height: 1.25;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 3 — TWO TYPES OF GAMES
+════════════════════════════════════════════════════════════════════ */
+.games-split {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 1820px;
+  gap: 0;
+}
+.game-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 52px;
+  padding: 100px 80px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.game-panel::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--line);
+  border-radius: 28px 28px 0 0;
+}
+.game-panel.gold-accent::after {
+  background: var(--gold-grad);
+}
+.game-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+}
+.game-label {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 88px;
+  letter-spacing: -2.5px;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.05;
+}
+.games-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 100px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 4 — DISC RESULTS
+════════════════════════════════════════════════════════════════════ */
+.disc-stage {
+  position: relative;
+  width: 900px;
+  height: 760px;
+  flex-shrink: 0;
+}
+/* Axis lines */
+.disc-axis-h, .disc-axis-v {
+  position: absolute;
+  background: rgba(242,193,78,.35);
+}
+.disc-axis-h {
+  top: 50%; left: 0; right: 0;
+  height: 1.5px;
+  transform: translateY(-50%);
+}
+.disc-axis-v {
+  left: 50%; top: 0; bottom: 0;
+  width: 1.5px;
+  transform: translateX(-50%);
+}
+/* Axis labels — HTML overlays */
+.disc-lbl {
+  position: absolute;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.disc-lbl.top    { top: 10px;  left: 50%; transform: translateX(-50%); }
+.disc-lbl.bottom { bottom: 10px; left: 50%; transform: translateX(-50%); }
+.disc-lbl.left   { left: 0; top: 50%; transform: translateY(-50%) rotate(-90deg); transform-origin: center; }
+.disc-lbl.right  { right: 0; top: 50%; transform: translateY(-50%) rotate(90deg); transform-origin: center; }
+/* Quadrant big letters */
+.disc-q {
+  position: absolute;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 180px;
+  letter-spacing: -6px;
+  line-height: 1;
+  color: var(--surface-2);
+}
+.disc-q.q-c { top: 60px; left: 60px; }
+.disc-q.q-d { top: 60px; right: 60px; color: var(--gold); opacity: 0.9; }
+.disc-q.q-s { bottom: 60px; left: 60px; }
+.disc-q.q-i { bottom: 60px; right: 60px; }
+/* Quadrant small sub-labels */
+.disc-sub {
+  position: absolute;
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.disc-sub.sc { top: 230px; left: 80px; }
+.disc-sub.sd { top: 230px; right: 80px; text-align: right; }
+.disc-sub.ss { bottom: 220px; left: 80px; }
+.disc-sub.si { bottom: 220px; right: 80px; text-align: right; }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 5 — SOCIAL VS PERSONAL IDEALISMS (two-card, left gold)
+════════════════════════════════════════════════════════════════════ */
+.split-row {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 1720px;
+  gap: 48px;
+}
+.split-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 72px 72px 80px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+  min-height: 580px;
+}
+/* Left-card accent: bottom edge gold */
+.split-card.left-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold-grad);
+}
+/* Right-card accent: top edge dim */
+.split-card.right-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--line);
+}
+.split-card-number {
+  position: absolute;
+  top: 52px;
+  right: 64px;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 120px;
+  letter-spacing: -5px;
+  line-height: 1;
+  color: rgba(242,193,78,.08);
+}
+.split-icon {
+  margin-bottom: 48px;
+}
+.split-label {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 88px;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: var(--text);
+}
+.split-card.left-card .split-label {
+  color: var(--gold);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 6 — CHOOSE YOUR ENVIRONMENT WISELY (two-card, right gold)
+════════════════════════════════════════════════════════════════════ */
+/* Reuses .split-row and .split-card with flipped accent */
+.split-card.right-gold::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold-grad);
+}
+.split-card.right-gold .split-label {
+  color: var(--gold);
+}
+.split-card.right-gold .split-card-number {
+  color: rgba(242,193,78,.08);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 7 — THREE PEOPLE IN THIS WORLD
+════════════════════════════════════════════════════════════════════ */
+.people-row {
+  display: flex;
+  align-items: stretch;
+  gap: 40px;
+  width: 100%;
+  max-width: 1820px;
+}
+.people-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 44px;
+  padding: 80px 48px 88px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.people-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--line);
+}
+.people-card.keep-card::before {
+  background: var(--gold-grad);
+}
+.people-icon {
+  width: 80px; height: 80px;
+  display: flex; align-items: center; justify-content: center;
+}
+.people-label {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 108px;
+  letter-spacing: -3px;
+  color: var(--text);
+  text-align: center;
+  line-height: 1;
+}
+.keep-card .people-label {
+  color: var(--gold);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 8 — FOUR QUADRANTS OF LEADERSHIP
+════════════════════════════════════════════════════════════════════ */
+.leadership-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+  max-width: 1600px;
+  height: 660px;
+}
+.leadership-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.leadership-cell::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--line);
+}
+.leadership-cell.gold-cell::before {
+  background: var(--gold-grad);
+}
+.leadership-cell-num {
+  position: absolute;
+  top: 20px;
+  left: 28px;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 20px;
+  color: rgba(242,193,78,.25);
+  letter-spacing: 1px;
+}
+.leadership-label {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 80px;
+  letter-spacing: -2px;
+  color: var(--text);
+  text-align: center;
+  line-height: 1;
+}
+.leadership-cell.gold-cell .leadership-label {
+  color: var(--gold);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 9 — CURRENT YOU VS FUTURE YOU
+════════════════════════════════════════════════════════════════════ */
+.cyvfy-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+  width: 100%;
+  max-width: 1700px;
+}
+.cyvfy-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+.cyvfy-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 64px 56px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  min-height: 280px;
+}
+.cyvfy-card.future {
+  border-color: rgba(242,193,78,.4);
+  background: rgba(242,193,78,.04);
+}
+.cyvfy-card-sub {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cyvfy-card-label {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 80px;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: var(--text);
+}
+.cyvfy-card.future .cyvfy-card-label {
+  color: var(--gold);
+}
+/* Arrow between cards */
+.cyvfy-arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+}
+/* Chips below */
+.cyvfy-chips {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+.cyvfy-chip {
+  padding: 20px 44px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 32px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 10 — FOUR STAGES OF LEARNING (staircase ascending L→R)
+════════════════════════════════════════════════════════════════════ */
+.stair-wrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 1800px;
+  height: 580px;
+}
+.stair-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+/* The block itself — heights ascend left to right */
+.stair-block {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  position: relative;
+}
+.stair-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--line);
+  border-radius: 16px 16px 0 0;
+}
+.stair-step:last-child .stair-block::before {
+  background: var(--gold-grad);
+}
+.stair-step:last-child .stair-block {
+  border-color: rgba(242,193,78,.35);
+  background: rgba(242,193,78,.05);
+}
+.stair-step-num {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 18px;
+  color: rgba(242,193,78,.3);
+  letter-spacing: 1px;
+}
+.stair-text {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 44px;
+  letter-spacing: -1px;
+  line-height: 1.15;
+  color: var(--soft);
+  text-align: center;
+  text-transform: uppercase;
+}
+.stair-step:last-child .stair-text {
+  color: var(--gold);
+}
+/* Connector arrows between steps */
+.stair-connector {
+  flex-shrink: 0;
+  width: 40px;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 16px;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 11 — CONE OF LEARNING
+════════════════════════════════════════════════════════════════════ */
+.cone-wrap {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+  width: 100%;
+  max-width: 1820px;
+}
+.cone-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+/* Each row is a bar with label + percentage */
+.cone-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line-soft);
+  position: relative;
+}
+.cone-pct {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 48px;
+  letter-spacing: -1px;
+  color: var(--muted);
+  min-width: 110px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.cone-bar-track {
+  flex: 1;
+  height: 28px;
+  background: var(--surface);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.cone-bar-fill {
+  height: 100%;
+  background: var(--surface-2);
+  border-radius: 6px;
+  transition: width 0s;
+}
+.cone-row-label {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 30px;
+  color: var(--soft);
+  min-width: 340px;
+  flex-shrink: 0;
+}
+/* Active rows (bottom half) */
+.cone-row.active-row .cone-pct { color: var(--gold); }
+.cone-row.active-row .cone-bar-fill { background: rgba(242,193,78,.25); }
+.cone-row.active-row .cone-row-label { color: var(--text); }
+.cone-row.top-row .cone-pct { font-size: 40px; color: var(--muted-2); }
+/* Group labels */
+.cone-group-label {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  padding: 10px 0 4px;
+}
+.cone-group-label.passive { color: var(--muted-2); }
+.cone-group-label.active  { color: var(--gold); opacity: 0.7; }
+/* Right: quote */
+.cone-right {
+  flex: 0 0 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 52px 52px 52px 52px;
+  background: var(--surface);
+  border: 1px solid rgba(242,193,78,.35);
+  border-top: 3px solid var(--gold);
+  border-radius: 20px;
+}
+.cone-quote-text {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 34px;
+  line-height: 1.55;
+  color: var(--text);
+  font-style: italic;
+}
+.cone-quote-attr {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 12 — TWO TYPES OF CLIENTS (split, icon top)
+════════════════════════════════════════════════════════════════════ */
+/* Reuses .split-row but cards are icon-top, centered */
+.client-row {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 1500px;
+  gap: 80px;
+}
+.client-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 52px;
+  padding: 90px 72px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+  min-height: 500px;
+}
+.client-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--line);
+}
+.client-card.do-card::after {
+  background: var(--gold-grad);
+}
+.client-card-label {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 140px;
+  letter-spacing: -4px;
+  line-height: 1;
+  color: var(--text);
+  text-align: center;
+}
+.client-card.do-card .client-card-label {
+  color: var(--gold);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 13 — FEEDBACK LOOPS (tree)
+════════════════════════════════════════════════════════════════════ */
+.tree-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: 1760px;
+}
+/* Node boxes */
+.tree-node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 48px;
+  background: var(--surface);
+  border: 2px solid rgba(242,193,78,.35);
+  border-radius: 14px;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 52px;
+  letter-spacing: -1px;
+  color: var(--text);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tree-node.catalyst {
+  border-color: var(--gold);
+  color: var(--gold);
+  font-size: 64px;
+  padding: 28px 72px;
+}
+.tree-node.response-node {
+  border-color: rgba(242,193,78,.55);
+  color: var(--text);
+}
+.tree-node.reaction-node {
+  border-color: rgba(242,193,78,.25);
+  color: var(--muted);
+}
+/* Row layouts */
+.tree-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  width: 100%;
+  position: relative;
+}
+/* SVG connector overlay */
+.tree-connectors {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 14 — FOUR STAGES OF BUSINESS (ascending staircase)
+════════════════════════════════════════════════════════════════════ */
+/* Reuses .stair-wrap, .stair-step, .stair-block patterns */
+.biz-stair-wrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 1800px;
+  height: 620px;
+}
+.biz-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+.biz-block {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 32px 20px 24px;
+  position: relative;
+  gap: 12px;
+}
+.biz-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--line);
+  border-radius: 16px 16px 0 0;
+}
+.biz-step:last-child .biz-block::before {
+  background: var(--gold-grad);
+}
+.biz-step:last-child .biz-block {
+  border-color: rgba(242,193,78,.35);
+  background: rgba(242,193,78,.05);
+}
+.biz-step-num {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 18px;
+  color: rgba(242,193,78,.25);
+}
+.biz-main {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 64px;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: var(--soft);
+  text-align: center;
+  text-transform: uppercase;
+}
+.biz-step:last-child .biz-main { color: var(--gold); }
+.biz-sub {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.3;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 15 — SKILL ASCENSION & LAW OF AVERAGES (ascending staircase)
+════════════════════════════════════════════════════════════════════ */
+/* Same staircase pattern as s10/s14, different content */
+.skill-stair-wrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 1820px;
+  height: 600px;
+}
+.skill-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+.skill-block {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  position: relative;
+}
+.skill-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--line);
+  border-radius: 16px 16px 0 0;
+}
+.skill-step:last-child .skill-block::before {
+  background: var(--gold-grad);
+}
+.skill-step:last-child .skill-block {
+  border-color: rgba(242,193,78,.35);
+  background: rgba(242,193,78,.05);
+}
+.skill-text {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 52px;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  color: var(--soft);
+  text-align: center;
+  text-transform: uppercase;
+}
+.skill-step:last-child .skill-text { color: var(--gold); }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 16 — THREE TYPES OF MONEY (existing, repositioned)
+════════════════════════════════════════════════════════════════════ */
+.money-row {
+  display: flex;
+  align-items: stretch;
+  gap: 32px;
+  width: 100%;
+  max-width: 1820px;
+}
+.money-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  padding: 88px 48px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.money-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold-grad);
+}
+.money-icon {
+  width: 88px; height: 88px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.money-label {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 108px;
+  letter-spacing: -3px;
+  color: var(--text);
+  text-align: center;
+  line-height: 1;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 17 — UNDERSTANDING MARGINS & LEVERAGE (two-card, stacked icons)
+════════════════════════════════════════════════════════════════════ */
+/* Reuses .client-row pattern with different icon treatment */
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 18 — LAW OF NATURAL SELECTION (existing, repositioned)
+════════════════════════════════════════════════════════════════════ */
+.doors-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 36px;
+  width: 100%;
+  max-width: 1820px;
+}
+.door-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  flex: 1;
+}
+.door-outer {
+  width: 100%;
+  max-width: 380px;
+  aspect-ratio: 3 / 4.4;
+  border: 4px solid rgba(242,193,78,.35);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: var(--surface);
+}
+.door-wrap.door-a .door-outer { border-color: #F2C14E; }
+.door-wrap.door-b .door-outer { border-color: rgba(242,193,78,.55); }
+.door-wrap.door-c .door-outer { border-color: rgba(242,193,78,.30); }
+.door-wrap.door-d .door-outer { border-color: rgba(242,193,78,.18); }
+.door-inner {
+  position: absolute;
+  inset: 12px;
+  border: 2.5px solid rgba(242,193,78,.35);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.door-wrap.door-a .door-inner { border-color: #F2C14E; }
+.door-wrap.door-b .door-inner { border-color: rgba(242,193,78,.55); }
+.door-wrap.door-c .door-inner { border-color: rgba(242,193,78,.30); }
+.door-wrap.door-d .door-inner { border-color: rgba(242,193,78,.18); }
+.door-handle {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: rgba(242,193,78,.4);
+}
+.door-wrap.door-a .door-handle { background: #F2C14E; }
+.door-wrap.door-b .door-handle { background: rgba(242,193,78,.6); }
+.door-letter {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 172px;
+  letter-spacing: -6px;
+  line-height: 1;
+  color: var(--soft);
+  margin-left: -28px;
+  user-select: none;
+}
+.door-wrap.door-a .door-letter { color: #F2C14E; }
+.door-wrap.door-b .door-letter { color: #B8B2A4; }
+.door-wrap.door-c .door-letter { color: #6B6558; }
+.door-wrap.door-d .door-letter { color: #4A4540; }
+.door-caption {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.door-wrap.door-a .door-caption { color: var(--gold); }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 19 — VISION & WHO AM I STATEMENT (flow diagram)
+════════════════════════════════════════════════════════════════════ */
+.vision-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 1820px;
+}
+.vision-node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 46px;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.15;
+}
+.vision-circle {
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(242,193,78,.4);
+  background: var(--surface);
+  color: var(--text);
+  flex-shrink: 0;
+}
+.vision-circle.gold-node {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(242,193,78,.04);
+}
+.vision-rect {
+  padding: 32px 44px;
+  border: 2.5px solid rgba(242,193,78,.4);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  flex-shrink: 0;
+  min-width: 260px;
+}
+.vision-rect.gold-node {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.vision-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+.vision-stack-item {
+  padding: 24px 36px;
+  border: 1.5px solid rgba(242,193,78,.3);
+  border-radius: 12px;
+  background: var(--surface);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 36px;
+  letter-spacing: -0.5px;
+  color: var(--soft);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.vision-stack-item:first-child {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: none;
+}
+.vision-stack-item:last-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.vision-input-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+/* Connector lines */
+.vision-connector {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 20 — REWRITING YOUR LIMITING BELIEFS (branch diagram)
+════════════════════════════════════════════════════════════════════ */
+.belief-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: 1400px;
+}
+.belief-top {
+  display: flex;
+  justify-content: center;
+}
+.belief-node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 80px;
+  background: var(--surface);
+  border: 2px solid rgba(242,193,78,.5);
+  border-radius: 16px;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 72px;
+  letter-spacing: -2px;
+  color: var(--text);
+  text-transform: uppercase;
+}
+.belief-connector-area {
+  position: relative;
+  width: 100%;
+  height: 100px;
+}
+.belief-bottom {
+  display: flex;
+  gap: 120px;
+  justify-content: center;
+  width: 100%;
+}
+.belief-leaf {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 80px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 80px;
+  letter-spacing: -2px;
+  color: var(--soft);
+  text-transform: uppercase;
+  min-width: 360px;
+}
+.belief-leaf.rewrite {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(242,193,78,.04);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   SLIDE 21 — TWO TYPES OF LIMITING BELIEFS (split, inverted accent)
+════════════════════════════════════════════════════════════════════ */
+/* Uses .client-row style but with different scale */
+.limiting-row {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 1600px;
+  gap: 60px;
+}
+.limiting-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 80px 64px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+  min-height: 480px;
+}
+.limiting-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--line);
+}
+.limiting-card.core-card::before {
+  background: var(--gold-grad);
+}
+.limiting-card-label {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 96px;
+  letter-spacing: -3px;
+  line-height: 1;
+  color: var(--text);
+  text-align: center;
+}
+.limiting-card.core-card .limiting-card-label {
+  color: var(--gold);
+}
+
+</style>
+</head>
+<body>
+
+<!-- Keyboard hint bar -->
+<div id="hint">
+  <span class="hint-key"><kbd>→</kbd><kbd>Space</kbd> Next</span>
+  <span class="hint-key"><kbd>←</kbd> Previous</span>
+  <span class="hint-key"><kbd>Home</kbd> First</span>
+  <span class="hint-key"><kbd>End</kbd> Last</span>
+  <span class="hint-key"><kbd>F</kbd> Fullscreen</span>
+</div>
+
+<div id="stage">
+  <div id="deck">
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 1 — COVER
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide cover-bg active" data-index="0">
+
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;">
+        <div class="cover-series">The Business Growth Gameplan™</div>
+        <div style="width:56px; height:3px; background:var(--gold-grad); border-radius:2px; margin-bottom:44px;"></div>
+        <div class="cover-module">MINDSET</div>
+        <div class="cover-brand">Elliot Hauraki</div>
+      </div>
+
+      <div class="slide-num">1 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 2 — THE EMOTIONAL ROLLERCOASTER
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="1">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div style="font-family:var(--display); font-weight:900; font-size:96px; letter-spacing:-3px; color:var(--text); text-align:center; margin-bottom:36px; line-height:0.95;">
+        The Emotional Rollercoaster
+      </div>
+
+      <div class="rc-wrap">
+
+        <div class="rc-chart-area">
+          <svg viewBox="0 0 780 560" width="860" height="616" aria-label="Emotional rollercoaster chart: money over time" role="img">
+            <line x1="120" y1="28" x2="120" y2="488" stroke="#F2C14E" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="120" y1="488" x2="758" y2="488" stroke="#F2C14E" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="120" y1="280" x2="758" y2="280" stroke="#F2C14E" stroke-width="1.8" stroke-linecap="round" opacity="0.40"/>
+            <polyline points="120,280 228,390 342,390 450,280 558,130 648,200 752,45" fill="none" stroke="#F2C14E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="120" cy="280" r="10" fill="#0A0A0A" stroke="#F2C14E" stroke-width="3"/>
+            <circle cx="228" cy="390" r="10" fill="#0A0A0A" stroke="#F2C14E" stroke-width="3"/>
+            <circle cx="342" cy="390" r="10" fill="#0A0A0A" stroke="#F2C14E" stroke-width="3"/>
+            <circle cx="450" cy="280" r="10" fill="#0A0A0A" stroke="#F2C14E" stroke-width="3"/>
+            <circle cx="558" cy="130" r="10" fill="#0A0A0A" stroke="#F2C14E" stroke-width="3"/>
+            <circle cx="648" cy="200" r="10" fill="#0A0A0A" stroke="#F2C14E" stroke-width="3"/>
+            <circle cx="752" cy="45"  r="12" fill="#F2C14E" stroke="#F2C14E" stroke-width="3"/>
+          </svg>
+          <div class="rc-axis-y">MONEY</div>
+          <div class="rc-axis-x">TIME</div>
+        </div>
+
+        <div class="rc-legend">
+          <div class="rc-legend-item"><span class="rc-num">1</span><span class="rc-label">Fear / Insanity / Craziness</span></div>
+          <div class="rc-legend-item"><span class="rc-num">2</span><span class="rc-label">Dip In Income</span></div>
+          <div class="rc-legend-item"><span class="rc-num">3</span><span class="rc-label">Results</span></div>
+          <div class="rc-legend-item"><span class="rc-num">4</span><span class="rc-label">Break Even</span></div>
+          <div class="rc-legend-item"><span class="rc-num">5</span><span class="rc-label">Crazy Growth</span></div>
+          <div class="rc-legend-item"><span class="rc-num">6</span><span class="rc-label">Fear / Insanity / Craziness Pt. II</span></div>
+          <div class="rc-legend-item"><span class="rc-num" style="color:var(--gold-hi);">7</span><span class="rc-label" style="color:var(--text);">Consistent Growth</span></div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">2 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 3 — TWO TYPES OF GAMES
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="2">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Two Types of Games</div>
+
+      <div class="games-split">
+
+        <div class="game-panel">
+          <div class="game-icon">
+            <svg viewBox="0 0 56 56" width="120" height="120" fill="none" aria-hidden="true">
+              <line x1="14" y1="10" x2="14" y2="46" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <rect x="14" y="10" width="10" height="8" fill="#F2C14E" opacity="0.85"/>
+              <rect x="24" y="10" width="10" height="8" fill="#F2C14E" opacity="0.25"/>
+              <rect x="34" y="10" width="8"  height="8" fill="#F2C14E" opacity="0.85"/>
+              <rect x="14" y="18" width="10" height="8" fill="#F2C14E" opacity="0.25"/>
+              <rect x="24" y="18" width="10" height="8" fill="#F2C14E" opacity="0.85"/>
+              <rect x="34" y="18" width="8"  height="8" fill="#F2C14E" opacity="0.25"/>
+              <rect x="14" y="26" width="10" height="8" fill="#F2C14E" opacity="0.85"/>
+              <rect x="24" y="26" width="10" height="8" fill="#F2C14E" opacity="0.25"/>
+              <rect x="34" y="26" width="8"  height="8" fill="#F2C14E" opacity="0.85"/>
+            </svg>
+          </div>
+          <div class="game-label">FINITE<br>GAMES</div>
+        </div>
+
+        <div class="games-divider">VS</div>
+
+        <div class="game-panel gold-accent">
+          <div class="game-icon">
+            <svg viewBox="0 0 56 56" width="120" height="120" fill="none" aria-hidden="true">
+              <path d="M28,28 C24,20 8,20 8,28 C8,36 24,36 28,28 C32,20 48,20 48,28 C48,36 32,36 28,28 Z" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="game-label" style="color:var(--gold);">INFINITE<br>GAMES</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">3 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 4 — DISC RESULTS (2x2 matrix)
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="3">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">DISC Results</div>
+
+      <div class="disc-stage">
+
+        <!-- Axis lines -->
+        <div class="disc-axis-h"></div>
+        <div class="disc-axis-v"></div>
+
+        <!-- Axis labels — HTML overlays -->
+        <div class="disc-lbl top">TASK-ORIENTED</div>
+        <div class="disc-lbl bottom">PEOPLE-ORIENTED</div>
+        <div class="disc-lbl left">SLOWER-PACED</div>
+        <div class="disc-lbl right">FASTER-PACED</div>
+
+        <!-- Big quadrant letters -->
+        <div class="disc-q q-c">C</div>
+        <div class="disc-q q-d">D</div>
+        <div class="disc-q q-s">S</div>
+        <div class="disc-q q-i">I</div>
+
+        <!-- Sub labels -->
+        <div class="disc-sub sc">Conscientious</div>
+        <div class="disc-sub sd">Dominant</div>
+        <div class="disc-sub ss">Steady</div>
+        <div class="disc-sub si">Influential</div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">4 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 5 — SOCIAL VS PERSONAL IDEALISMS
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="4">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Social vs Personal Idealisms</div>
+
+      <div class="split-row">
+
+        <!-- SOCIAL IDEALISMS — left card, bottom gold accent, label gold -->
+        <div class="split-card left-card">
+          <div class="split-card-number">01</div>
+          <div class="split-icon">
+            <svg viewBox="0 0 52 52" width="80" height="80" fill="none" aria-hidden="true">
+              <!-- Three people / community icon -->
+              <circle cx="26" cy="16" r="8" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <path d="M8 44 C8 34 18 28 26 28 C34 28 44 34 44 44" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" fill="none"/>
+              <circle cx="12" cy="20" r="5" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" opacity="0.5"/>
+              <path d="M2 44 C2 38 7 34 12 34" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" fill="none" opacity="0.5"/>
+              <circle cx="40" cy="20" r="5" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" opacity="0.5"/>
+              <path d="M50 44 C50 38 45 34 40 34" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" fill="none" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="split-label">SOCIAL<br>IDEALISMS</div>
+        </div>
+
+        <!-- PERSONAL IDEALISMS — right card, no accent, dimmer -->
+        <div class="split-card right-card">
+          <div class="split-card-number">02</div>
+          <div class="split-icon">
+            <svg viewBox="0 0 52 52" width="80" height="80" fill="none" aria-hidden="true">
+              <!-- Single person / self icon -->
+              <circle cx="26" cy="18" r="10" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <path d="M6 48 C6 36 15 30 26 30 C37 30 46 36 46 48" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="split-label" style="color:var(--text);">PERSONAL<br>IDEALISMS</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">5 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 6 — CHOOSE YOUR ENVIRONMENT WISELY
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="5">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title" style="font-size:80px;">Choose Your Environment Wisely</div>
+
+      <div class="split-row">
+
+        <!-- PHYSICAL ENVIRONMENT — left, dim -->
+        <div class="split-card right-card" style="background:var(--surface);">
+          <div class="split-card-number" style="color:rgba(242,193,78,.06);">01</div>
+          <div class="split-icon">
+            <svg viewBox="0 0 52 52" width="80" height="80" fill="none" aria-hidden="true">
+              <!-- Building / physical space -->
+              <rect x="8" y="20" width="36" height="28" rx="2" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <polyline points="4,22 26,6 48,22" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <rect x="20" y="34" width="12" height="14" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" rx="1"/>
+            </svg>
+          </div>
+          <div class="split-label" style="color:var(--text);">PHYSICAL<br>ENVIRONMENT</div>
+        </div>
+
+        <!-- METAPHYSICAL ENVIRONMENT — right, gold accent top -->
+        <div class="split-card right-gold">
+          <div class="split-card-number">02</div>
+          <div class="split-icon">
+            <svg viewBox="0 0 52 52" width="80" height="80" fill="none" aria-hidden="true">
+              <!-- Mind / abstract -->
+              <circle cx="26" cy="22" r="14" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <path d="M18 36 C18 44 34 44 34 36" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" fill="none"/>
+              <line x1="26" y1="8" x2="26" y2="4" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <line x1="36" y1="12" x2="39" y2="9" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <line x1="16" y1="12" x2="13" y2="9" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="split-label">METAPHYSICAL<br>ENVIRONMENT</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">6 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 7 — THREE PEOPLE IN THIS WORLD
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="6">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Three People in This World</div>
+
+      <div class="people-row">
+
+        <!-- KEEP — gold -->
+        <div class="people-card keep-card">
+          <div class="people-icon">
+            <svg viewBox="0 0 48 48" width="80" height="80" fill="none" aria-hidden="true">
+              <circle cx="24" cy="18" r="9" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <path d="M6 44 C6 34 14 28 24 28 C34 28 42 34 42 44" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" fill="none"/>
+              <polyline points="16,25 20,30 28,22" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="people-label">KEEP</div>
+        </div>
+
+        <!-- CUT -->
+        <div class="people-card">
+          <div class="people-icon">
+            <svg viewBox="0 0 48 48" width="80" height="80" fill="none" aria-hidden="true">
+              <circle cx="24" cy="18" r="9" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round"/>
+              <path d="M6 44 C6 34 14 28 24 28 C34 28 42 34 42 44" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round" fill="none"/>
+              <line x1="16" y1="22" x2="28" y2="34" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round"/>
+              <line x1="28" y1="22" x2="16" y2="34" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="people-label" style="color:var(--muted);">CUT</div>
+        </div>
+
+        <!-- LIMIT -->
+        <div class="people-card">
+          <div class="people-icon">
+            <svg viewBox="0 0 48 48" width="80" height="80" fill="none" aria-hidden="true">
+              <circle cx="24" cy="18" r="9" stroke="#6B6558" stroke-width="1.75" stroke-linecap="round"/>
+              <path d="M6 44 C6 34 14 28 24 28 C34 28 42 34 42 44" stroke="#6B6558" stroke-width="1.75" stroke-linecap="round" fill="none"/>
+              <line x1="14" y1="28" x2="34" y2="28" stroke="#6B6558" stroke-width="1.75" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="people-label" style="color:var(--muted-2);">LIMIT</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">7 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 8 — FOUR QUADRANTS OF LEADERSHIP
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="7">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Four Quadrants of Leadership</div>
+
+      <div class="leadership-grid">
+
+        <div class="leadership-cell gold-cell">
+          <div class="leadership-cell-num">01</div>
+          <div class="leadership-label">COUNSELING</div>
+        </div>
+
+        <div class="leadership-cell">
+          <div class="leadership-cell-num">02</div>
+          <div class="leadership-label">TRAINING</div>
+        </div>
+
+        <div class="leadership-cell">
+          <div class="leadership-cell-num">03</div>
+          <div class="leadership-label">COACHING</div>
+        </div>
+
+        <div class="leadership-cell gold-cell">
+          <div class="leadership-cell-num">04</div>
+          <div class="leadership-label">MENTORING</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">8 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 9 — CURRENT YOU VS FUTURE YOU
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="8">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Current You vs Future You</div>
+
+      <div class="cyvfy-wrap">
+
+        <div class="cyvfy-row">
+
+          <!-- Current You -->
+          <div class="cyvfy-card">
+            <div class="cyvfy-card-sub">Right Now</div>
+            <div class="cyvfy-card-label">CURRENT YOU</div>
+          </div>
+
+          <!-- Arrow -->
+          <div class="cyvfy-arrow">
+            <svg viewBox="0 0 80 40" width="80" height="40" fill="none" aria-hidden="true">
+              <line x1="4" y1="20" x2="64" y2="20" stroke="#F2C14E" stroke-width="2.5" stroke-linecap="round"/>
+              <polyline points="52,8 64,20 52,32" stroke="#F2C14E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+
+          <!-- Future You -->
+          <div class="cyvfy-card future">
+            <div class="cyvfy-card-sub" style="color:rgba(242,193,78,.6);">Where You're Going</div>
+            <div class="cyvfy-card-label">FUTURE YOU</div>
+          </div>
+
+        </div>
+
+        <!-- Chips -->
+        <div class="cyvfy-chips">
+          <div class="cyvfy-chip">SKILLS</div>
+          <div class="cyvfy-chip">BELIEFS</div>
+          <div class="cyvfy-chip">DISCIPLINES</div>
+          <div class="cyvfy-chip">PERSONALITY TRAITS</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">9 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 10 — FOUR STAGES OF LEARNING
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="9">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Four Stages of Learning</div>
+
+      <div class="stair-wrap">
+
+        <!-- Step 1 — shortest -->
+        <div class="stair-step">
+          <div class="stair-block" style="height:200px;">
+            <div class="stair-step-num">01</div>
+            <div class="stair-text">UNCONSCIOUS<br>INCOMPETENCE</div>
+          </div>
+        </div>
+
+        <div class="stair-connector">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="stair-step">
+          <div class="stair-block" style="height:300px;">
+            <div class="stair-step-num">02</div>
+            <div class="stair-text">CONSCIOUS<br>INCOMPETENCE</div>
+          </div>
+        </div>
+
+        <div class="stair-connector">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="stair-step">
+          <div class="stair-block" style="height:410px;">
+            <div class="stair-step-num">03</div>
+            <div class="stair-text">CONSCIOUS<br>COMPETENCE</div>
+          </div>
+        </div>
+
+        <div class="stair-connector">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 4 — tallest, gold -->
+        <div class="stair-step">
+          <div class="stair-block" style="height:530px;">
+            <div class="stair-step-num">04</div>
+            <div class="stair-text">UNCONSCIOUS<br>COMPETENCE</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">10 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 11 — CONE OF LEARNING
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="10">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Cone of Learning</div>
+
+      <div class="cone-wrap">
+
+        <!-- Left: stacked bars -->
+        <div class="cone-left">
+
+          <div class="cone-group-label passive">PASSIVE</div>
+
+          <div class="cone-row top-row">
+            <div class="cone-pct">10%</div>
+            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:10%;"></div></div>
+            <div class="cone-row-label">READING</div>
+          </div>
+          <div class="cone-row top-row">
+            <div class="cone-pct">20%</div>
+            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:20%;"></div></div>
+            <div class="cone-row-label">HEARING</div>
+          </div>
+          <div class="cone-row top-row">
+            <div class="cone-pct">30%</div>
+            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:30%;"></div></div>
+            <div class="cone-row-label">SEEING</div>
+          </div>
+          <div class="cone-row top-row">
+            <div class="cone-pct">50%</div>
+            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:50%;"></div></div>
+            <div class="cone-row-label">WATCHING A DEMONSTRATION</div>
+          </div>
+
+          <div class="cone-group-label active" style="margin-top:16px;">ACTIVE</div>
+
+          <div class="cone-row active-row">
+            <div class="cone-pct">70%</div>
+            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:70%;"></div></div>
+            <div class="cone-row-label">DISCUSSING &amp; PARTICIPATING</div>
+          </div>
+          <div class="cone-row active-row">
+            <div class="cone-pct">90%</div>
+            <div class="cone-bar-track"><div class="cone-bar-fill" style="width:90%;"></div></div>
+            <div class="cone-row-label">DOING THE REAL THING</div>
+          </div>
+
+        </div>
+
+        <!-- Right: Confucius quote -->
+        <div class="cone-right">
+          <div class="cone-quote-text">"I see and I forget. I hear and I remember. I do and I understand."</div>
+          <div class="cone-quote-attr">Confucius</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">11 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 12 — TWO TYPES OF CLIENTS
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="11">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Two Types of Clients</div>
+
+      <div class="client-row">
+
+        <!-- DO — gold, bottom accent -->
+        <div class="client-card do-card">
+          <svg viewBox="0 0 56 56" width="88" height="88" fill="none" aria-hidden="true">
+            <circle cx="28" cy="28" r="22" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <polyline points="18,28 25,35 38,22" stroke="#F2C14E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <div class="client-card-label">DO</div>
+        </div>
+
+        <!-- THINK -->
+        <div class="client-card">
+          <svg viewBox="0 0 56 56" width="88" height="88" fill="none" aria-hidden="true">
+            <circle cx="28" cy="24" r="14" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round"/>
+            <line x1="28" y1="38" x2="28" y2="46" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round"/>
+            <line x1="22" y1="18" x2="28" y2="24" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round"/>
+            <line x1="28" y1="18" x2="28" y2="24" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+          <div class="client-card-label" style="color:var(--muted);">THINK</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">12 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 13 — FEEDBACK LOOPS
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="12">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Feedback Loops</div>
+
+      <div class="tree-wrap">
+
+        <!-- Row 1: CATALYST -->
+        <div class="tree-row">
+          <div class="tree-node catalyst">CATALYST</div>
+        </div>
+
+        <!-- Connector row 1 → row 2 -->
+        <div style="position:relative; width:100%; height:80px; flex-shrink:0;">
+          <svg viewBox="0 0 1760 80" width="100%" height="80" preserveAspectRatio="none" aria-hidden="true" style="position:absolute;top:0;left:0;">
+            <!-- Left branch -->
+            <line x1="880" y1="0" x2="440" y2="80" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Right branch -->
+            <line x1="880" y1="0" x2="1320" y2="80" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- Row 2: RESPONSE + REACTION -->
+        <div class="tree-row">
+          <div class="tree-node response-node">RESPONSE</div>
+          <div style="width:400px; flex-shrink:0;"></div>
+          <div class="tree-node reaction-node">REACTION</div>
+        </div>
+
+        <!-- Connector row 2 → row 3 -->
+        <div style="position:relative; width:100%; height:80px; flex-shrink:0;">
+          <svg viewBox="0 0 1760 80" width="100%" height="80" preserveAspectRatio="none" aria-hidden="true" style="position:absolute;top:0;left:0;">
+            <!-- Left RESPONSE branches -->
+            <line x1="440" y1="0" x2="220" y2="80" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="440" y1="0" x2="660" y2="80" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <!-- Right REACTION branches -->
+            <line x1="1320" y1="0" x2="1100" y2="80" stroke="rgba(242,193,78,.25)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="1320" y1="0" x2="1540" y2="80" stroke="rgba(242,193,78,.25)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- Row 3: RESPONSE + REACTION (x2) — gap tuned so the 4 nodes
+             centre on the connector endpoints (220/660/1100/1540) and stay in frame -->
+        <div class="tree-row" style="gap:176px;">
+          <div class="tree-node response-node" style="font-size:34px; padding:22px 34px;">RESPONSE</div>
+          <div class="tree-node reaction-node" style="font-size:34px; padding:22px 34px;">REACTION</div>
+          <div class="tree-node response-node" style="font-size:34px; padding:22px 34px; border-color:rgba(242,193,78,.2); color:var(--muted);">RESPONSE</div>
+          <div class="tree-node reaction-node" style="font-size:34px; padding:22px 34px; border-color:rgba(242,193,78,.15); color:var(--muted-2);">REACTION</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">13 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 14 — FOUR STAGES OF BUSINESS
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="13">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Four Stages of Business</div>
+
+      <div class="biz-stair-wrap">
+
+        <!-- Step 1 — BUILD -->
+        <div class="biz-step">
+          <div class="biz-block" style="height:180px;">
+            <div class="biz-step-num">01</div>
+            <div class="biz-main">BUILD</div>
+            <div class="biz-sub">Third World<br>Problems</div>
+          </div>
+        </div>
+
+        <div class="stair-connector">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 2 — GROW -->
+        <div class="biz-step">
+          <div class="biz-block" style="height:300px;">
+            <div class="biz-step-num">02</div>
+            <div class="biz-main">GROW</div>
+            <div class="biz-sub">Business<br>Limbo</div>
+          </div>
+        </div>
+
+        <div class="stair-connector">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 3 — SCALE -->
+        <div class="biz-step">
+          <div class="biz-block" style="height:420px;">
+            <div class="biz-step-num">03</div>
+            <div class="biz-main">SCALE</div>
+            <div class="biz-sub">First World<br>Problems</div>
+          </div>
+        </div>
+
+        <div class="stair-connector">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 4 — CHOICE, gold -->
+        <div class="biz-step">
+          <div class="biz-block" style="height:560px;">
+            <div class="biz-step-num">04</div>
+            <div class="biz-main">CHOICE</div>
+            <div class="biz-sub" style="color:rgba(242,193,78,.6);">End<br>Destination</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">14 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 15 — SKILL ASCENSION & THE LAW OF AVERAGES
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="14">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title" style="font-size:80px; letter-spacing:-1px;">Skill Ascension &amp; The Law of Averages</div>
+
+      <div class="skill-stair-wrap">
+
+        <!-- Step 1 — MARKETING -->
+        <div class="skill-step">
+          <div class="skill-block" style="height:160px;">
+            <div class="skill-text">MARKETING</div>
+          </div>
+        </div>
+
+        <div class="stair-connector">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 2 — APPOINTMENT SETTING -->
+        <div class="skill-step">
+          <div class="skill-block" style="height:280px;">
+            <div class="skill-text">APPOINTMENT<br>SETTING</div>
+          </div>
+        </div>
+
+        <div class="stair-connector">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 3 — CLOSING -->
+        <div class="skill-step">
+          <div class="skill-block" style="height:400px;">
+            <div class="skill-text">CLOSING</div>
+          </div>
+        </div>
+
+        <div class="stair-connector">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="28" y2="20" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="20,10 28,20 20,30" stroke="rgba(242,193,78,.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 4 — CLIENTS = $$$, gold -->
+        <div class="skill-step">
+          <div class="skill-block" style="height:540px;">
+            <div class="skill-text">CLIENTS<br>= $$$</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">15 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 16 — THREE TYPES OF MONEY
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="15">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Three Types of Money</div>
+
+      <div class="money-row">
+
+        <div class="money-card">
+          <div class="money-icon">
+            <svg viewBox="0 0 48 48" width="88" height="88" fill="none" aria-hidden="true">
+              <circle cx="24" cy="24" r="20" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <line x1="24" y1="14" x2="24" y2="34" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <line x1="14" y1="24" x2="34" y2="24" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="money-label">NEW</div>
+        </div>
+
+        <div class="money-card">
+          <div class="money-icon">
+            <svg viewBox="0 0 48 48" width="88" height="88" fill="none" aria-hidden="true">
+              <line x1="24" y1="36" x2="24" y2="12" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+              <polyline points="14,22 24,12 34,22" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <line x1="14" y1="36" x2="34" y2="36" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="money-label">MORE</div>
+        </div>
+
+        <div class="money-card">
+          <div class="money-icon">
+            <svg viewBox="0 0 48 48" width="88" height="88" fill="none" aria-hidden="true">
+              <path d="M24,8 L36,13 L36,25 C36,32 30,38 24,40 C18,38 12,32 12,25 L12,13 Z" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="18,24 22,28 30,20" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="money-label">SAVE</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">16 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 17 — UNDERSTANDING MARGINS & LEVERAGE
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="16">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title" style="font-size:80px;">Understanding Margins &amp; Leverage</div>
+
+      <!-- Two tall cards side by side, icon centred, label centred, differentiated by icon type + border treatment -->
+      <div style="display:flex; align-items:stretch; width:100%; max-width:1440px; gap:60px;">
+
+        <!-- MARGINS — left, top bar, neutral -->
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:52px; padding:90px 60px; background:var(--surface); border:1px solid var(--line); border-radius:28px; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:0; left:0; right:0; height:3px; background:var(--line); border-radius:28px 28px 0 0;"></div>
+          <svg viewBox="0 0 56 56" width="96" height="96" fill="none" aria-hidden="true">
+            <!-- Percent / margin symbol -->
+            <circle cx="18" cy="18" r="7" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <circle cx="38" cy="38" r="7" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <line x1="14" y1="42" x2="42" y2="14" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+          <div style="font-family:var(--display); font-weight:900; font-size:108px; letter-spacing:-3px; color:var(--text); text-align:center; line-height:1;">MARGINS</div>
+        </div>
+
+        <!-- LEVERAGE — right, gold top bar, gold label -->
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:52px; padding:90px 60px; background:rgba(242,193,78,.03); border:1px solid rgba(242,193,78,.3); border-radius:28px; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:0; left:0; right:0; height:3px; background:var(--gold-grad); border-radius:28px 28px 0 0;"></div>
+          <svg viewBox="0 0 56 56" width="96" height="96" fill="none" aria-hidden="true">
+            <!-- Lever / fulcrum -->
+            <line x1="6" y1="42" x2="50" y2="42" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <polygon points="28,42 20,52 36,52" fill="rgba(242,193,78,.2)" stroke="#F2C14E" stroke-width="1.75" stroke-linejoin="round"/>
+            <line x1="6" y1="42" x2="28" y2="14" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round"/>
+            <circle cx="6" cy="42" r="4" fill="#F2C14E"/>
+            <circle cx="28" cy="14" r="4" fill="#0A0A0A" stroke="#F2C14E" stroke-width="1.75"/>
+          </svg>
+          <div style="font-family:var(--display); font-weight:900; font-size:108px; letter-spacing:-3px; color:var(--gold); text-align:center; line-height:1;">LEVERAGE</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">17 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 18 — LAW OF NATURAL SELECTION (four doors)
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="17">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Law of Natural Selection</div>
+
+      <div class="doors-row">
+
+        <div class="door-wrap door-a">
+          <div class="door-outer">
+            <div class="door-inner">
+              <span class="door-letter">A</span>
+              <div class="door-handle"></div>
+            </div>
+          </div>
+          <div class="door-caption">Does what you say<br>Gets great results</div>
+        </div>
+
+        <div class="door-wrap door-b">
+          <div class="door-outer">
+            <div class="door-inner">
+              <span class="door-letter">B</span>
+              <div class="door-handle"></div>
+            </div>
+          </div>
+          <div class="door-caption">Does partly what you say<br>Gets mediocre results</div>
+        </div>
+
+        <div class="door-wrap door-c">
+          <div class="door-outer">
+            <div class="door-inner">
+              <span class="door-letter">C</span>
+              <div class="door-handle"></div>
+            </div>
+          </div>
+          <div class="door-caption">Doesn't do what you say<br>Drops off</div>
+        </div>
+
+        <div class="door-wrap door-d">
+          <div class="door-outer">
+            <div class="door-inner">
+              <span class="door-letter">D</span>
+              <div class="door-handle"></div>
+            </div>
+          </div>
+          <div class="door-caption">Doesn't do what you say<br>Doesn't get results and blames you</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">18 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 19 — VISION & YOUR "WHO AM I" STATEMENT
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="18">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title" style="font-size:76px; margin-bottom:52px;">Vision &amp; Your "Who Am I" Statement</div>
+
+      <div class="vision-wrap">
+
+        <!-- VISION + IDENTITY stacked circles -->
+        <div class="vision-input-stack">
+          <div class="vision-circle vision-node gold-node" style="width:200px; height:200px; font-size:36px;">VISION</div>
+          <div style="height:20px;"></div>
+          <div class="vision-circle vision-node" style="width:200px; height:200px; font-size:32px;">IDENTITY</div>
+        </div>
+
+        <!-- Connector 1 -->
+        <div class="vision-connector">
+          <svg viewBox="0 0 80 40" width="80" height="40" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="64" y2="20" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+            <polyline points="52,8 64,20 52,32" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- RETICULAR ACTIVATING SYSTEM box -->
+        <div class="vision-rect vision-node" style="font-size:34px; padding:36px 48px; text-align:center; min-width:320px;">RETICULAR<br>ACTIVATING<br>SYSTEM</div>
+
+        <!-- Connector 2 -->
+        <div class="vision-connector">
+          <svg viewBox="0 0 80 40" width="80" height="40" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="64" y2="20" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+            <polyline points="52,8 64,20 52,32" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- WORLD circle -->
+        <div class="vision-circle vision-node" style="width:220px; height:220px; font-size:40px; flex-shrink:0;">WORLD</div>
+
+        <!-- Connector 3 -->
+        <div class="vision-connector">
+          <svg viewBox="0 0 80 40" width="80" height="40" fill="none" aria-hidden="true">
+            <line x1="4" y1="20" x2="64" y2="20" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round"/>
+            <polyline points="52,8 64,20 52,32" stroke="rgba(242,193,78,.5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Output stack -->
+        <div class="vision-stack">
+          <div class="vision-stack-item" style="color:var(--gold);">WHAT YOU "SEE"</div>
+          <div class="vision-stack-item">THE OPPORTUNITIES<br>YOU CREATE</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">19 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 20 — REWRITING YOUR LIMITING BELIEFS
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="19">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title" style="font-size:80px;">Rewriting Your Limiting Beliefs</div>
+
+      <div class="belief-wrap">
+
+        <!-- BELIEF — root node -->
+        <div class="belief-top">
+          <div class="belief-node">BELIEF</div>
+        </div>
+
+        <!-- SVG connectors — two branches -->
+        <div class="belief-connector-area">
+          <svg viewBox="0 0 1400 100" width="100%" height="100" preserveAspectRatio="none" aria-hidden="true" style="position:absolute;top:0;left:0;">
+            <line x1="700" y1="0" x2="350" y2="100" stroke="rgba(242,193,78,.45)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="700" y1="0" x2="1050" y2="100" stroke="rgba(242,193,78,.45)" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- ACCEPT + REWRITE -->
+        <div class="belief-bottom">
+          <div class="belief-leaf">ACCEPT</div>
+          <div class="belief-leaf rewrite">REWRITE</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">20 / 21</div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 21 — TWO TYPES OF LIMITING BELIEFS
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="slide" data-index="20">
+
+      <div class="kicker">The Business Growth Gameplan™ · Mindset</div>
+
+      <div class="slide-title">Two Types of Limiting Beliefs</div>
+
+      <div class="limiting-row">
+
+        <!-- LIMITING BELIEFS -->
+        <div class="limiting-card">
+          <svg viewBox="0 0 56 56" width="80" height="80" fill="none" aria-hidden="true">
+            <!-- Chain link — constraint icon -->
+            <rect x="10" y="18" width="16" height="20" rx="8" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round"/>
+            <rect x="30" y="18" width="16" height="20" rx="8" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round"/>
+            <line x1="26" y1="28" x2="30" y2="28" stroke="#8A8477" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+          <div class="limiting-card-label">LIMITING<br>BELIEFS</div>
+        </div>
+
+        <!-- CORE BELIEFS — gold accent top -->
+        <div class="limiting-card core-card">
+          <svg viewBox="0 0 56 56" width="80" height="80" fill="none" aria-hidden="true">
+            <!-- Solid foundation / core -->
+            <polygon points="28,8 48,40 8,40" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <circle cx="28" cy="28" r="6" fill="rgba(242,193,78,.2)" stroke="#F2C14E" stroke-width="1.75"/>
+          </svg>
+          <div class="limiting-card-label">CORE<br>BELIEFS</div>
+        </div>
+
+      </div>
+
+      <div class="brand-mark">Elliot Hauraki</div>
+      <div class="slide-num">21 / 21</div>
+    </div>
+
+
+  </div><!-- /deck -->
+</div><!-- /stage -->
+
+<!-- Progress bar -->
+<div id="progress-track"><div id="progress-fill" style="width:4.76%;"></div></div>
+
+<script>
+/* ─── SCALE DECK TO VIEWPORT ──────────────────────────────────── */
+const deck = document.getElementById('deck');
+
+function scaleDeck() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const scaleX = vw / 1920;
+  const scaleY = vh / 1080;
+  const scale = Math.min(scaleX, scaleY);
+  const left = (vw - 1920 * scale) / 2;
+  const top  = (vh - 1080 * scale) / 2;
+  deck.style.transform = `translate(${left}px,${top}px) scale(${scale})`;
+}
+
+scaleDeck();
+window.addEventListener('resize', scaleDeck);
+
+/* ─── SLIDE NAVIGATION ────────────────────────────────────────── */
+const slides = Array.from(document.querySelectorAll('.slide'));
+const fill   = document.getElementById('progress-fill');
+let current  = 0;
+
+function goTo(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, slides.length - 1));
+  slides[current].classList.add('active');
+  fill.style.width = ((current + 1) / slides.length * 100) + '%';
+}
+
+/* Keyboard */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ')  { e.preventDefault(); goTo(current + 1); }
+  if (e.key === 'ArrowLeft')                     { e.preventDefault(); goTo(current - 1); }
+  if (e.key === 'Home')                          { e.preventDefault(); goTo(0); }
+  if (e.key === 'End')                           { e.preventDefault(); goTo(slides.length - 1); }
+  if (e.key === 'f' || e.key === 'F') {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+});
+
+/* Touch / swipe */
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+});
+
+/* Click to advance */
+deck.addEventListener('click', () => goTo(current + 1));
+
+/* ─── HIDE HINT AFTER FIRST INTERACTION ───────────────────────── */
+const hint = document.getElementById('hint');
+let hintDismissed = false;
+function dismissHint() {
+  if (hintDismissed) return;
+  hintDismissed = true;
+  hint.classList.add('gone');
+}
+document.addEventListener('keydown', dismissHint, { once: true });
+document.addEventListener('touchend', dismissHint, { once: true });
+setTimeout(dismissHint, 5000);
+</script>
+
+</body>
+</html>
