@@ -46,9 +46,9 @@ html, body {
 #stage {
   position: fixed;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* deck is positioned by scaleDeck()'s transform — don't also flex-center it */
+  display: block;
+  overflow: hidden;
   background: #050505;
 }
 
@@ -58,6 +58,7 @@ html, body {
   overflow: hidden;
   width: 1920px;
   height: 1080px;
+  flex: none;          /* don't let the flex stage shrink the deck below 1920 before scaling */
   transform-origin: top left;
 }
 
@@ -2608,18 +2609,23 @@ html, body {
 const deck = document.getElementById('deck');
 
 function scaleDeck() {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const scaleX = vw / 1920;
-  const scaleY = vh / 1080;
-  const scale = Math.min(scaleX, scaleY);
+  const vp = window.visualViewport;
+  const vw = Math.max(vp ? vp.width  : 0, document.documentElement.clientWidth,  window.innerWidth);
+  const vh = Math.max(vp ? vp.height : 0, document.documentElement.clientHeight, window.innerHeight);
+  const scale = Math.min(vw / 1920, vh / 1080);
   const left = (vw - 1920 * scale) / 2;
   const top  = (vh - 1080 * scale) / 2;
   deck.style.transform = `translate(${left}px,${top}px) scale(${scale})`;
 }
 
+// Fire on every event that can change the viewport, plus after load/paint —
+// mobile browsers report bogus dimensions on first run, so re-run generously.
 scaleDeck();
+requestAnimationFrame(scaleDeck);
 window.addEventListener('resize', scaleDeck);
+window.addEventListener('orientationchange', () => setTimeout(scaleDeck, 100));
+window.addEventListener('load', () => { scaleDeck(); setTimeout(scaleDeck, 200); });
+if (window.visualViewport) window.visualViewport.addEventListener('resize', scaleDeck);
 
 /* ─── SLIDE NAVIGATION ────────────────────────────────────────── */
 const slides = Array.from(document.querySelectorAll('.slide'));
