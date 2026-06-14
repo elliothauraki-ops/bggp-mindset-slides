@@ -832,122 +832,141 @@ html, body {
 ════════════════════════════════════════════════════════════════════ */
 .cone-wrap {
   display: flex;
-  align-items: center;
-  gap: 40px;
+  align-items: flex-start;
+  gap: 32px;
   width: 100%;
   max-width: 1820px;
 }
-/* Triangle container — SVG clips the shape, HTML labels overlay.
-   Width = 740px triangle + 320px right-annotation column */
+/* Triangle sits on the left — fixed to the SVG's natural rendered size */
 .cone-pyramid-area {
-  flex: 0 0 1060px;
+  flex: 0 0 auto;
   position: relative;
-  width: 1060px;
-  height: 620px;
+  /* SVG viewBox 740x620 scaled so height = 580px */
+  width: 740px;
+  height: 580px;
 }
 .cone-pyramid-svg {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  display: block;
+  width: 740px;
+  height: 580px;
 }
-/* HTML label rows — absolutely positioned over each band */
-.cone-band-labels {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-}
-.cone-band-row {
-  position: absolute;
-  left: 0; right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.cone-band-text {
-  font-family: var(--display);
-  font-weight: 800;
-  text-transform: uppercase;
-  text-align: center;
-  line-height: 1.1;
-  color: var(--text);
-}
-/* Right-side annotation column */
-.cone-annotations {
-  position: absolute;
-  right: -260px;
-  top: 0;
-  width: 240px;
-  height: 100%;
+/* Right label column — vertically mirrors the 6 bands */
+.cone-label-col {
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  pointer-events: none;
+  height: 580px;   /* match pyramid height */
+  padding-left: 0;
+  border-left: 1px solid rgba(242,193,78,.18);
+  position: relative;
 }
-.cone-ann-band {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.cone-ann-pct {
-  font-family: var(--display);
-  font-weight: 900;
-  font-size: 28px;
-  letter-spacing: -0.5px;
-  color: var(--muted);
-  min-width: 52px;
-  text-align: right;
-  flex-shrink: 0;
-}
-.cone-ann-pct.active-pct { color: var(--gold); }
-.cone-ann-label {
-  font-family: var(--body);
-  font-weight: 600;
-  font-size: 19px;
-  color: var(--muted);
-  line-height: 1.25;
-  text-transform: uppercase;
-}
-.cone-ann-label.active-label { color: var(--soft); }
-/* PASSIVE / ACTIVE side labels */
-.cone-side-label {
+/* Group divider between PASSIVE (top 4) and ACTIVE (bottom 2) */
+.cone-group-divider {
   position: absolute;
-  right: -330px;
+  /* sits between band 4 and band 5: 4 * (580/6) = 386.7px */
+  top: 387px;
+  left: 0; right: 0;
+  height: 1px;
+  background: rgba(242,193,78,.30);
+}
+/* Group label tags (PASSIVE / ACTIVE) — right-aligned at column edge */
+.cone-group-tag {
+  position: absolute;
+  right: 8px;
   font-family: var(--display);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 10px;
   letter-spacing: 4px;
   text-transform: uppercase;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
+}
+.cone-group-tag.tag-passive {
+  /* vertically centred over top 4 rows: 0 to 387px */
+  top: 0;
+  height: 387px;
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-.cone-side-passive {
+  justify-content: center;
   color: var(--muted-2);
-  top: 0;
 }
-.cone-side-active {
+.cone-group-tag.tag-active {
+  /* vertically centred over bottom 2 rows: 387 to 580px */
+  top: 387px;
+  height: 193px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--gold);
-  opacity: 0.75;
-  bottom: 0;
+  opacity: 0.8;
 }
+/* Each of the 6 label rows — equal 1/6 of 580px = 96.7px each */
+.cone-label-row {
+  flex: 0 0 calc(580px / 6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 28px;
+  gap: 2px;
+}
+.cone-label-row.row-gold .cone-row-name,
+.cone-label-row.row-gold .cone-row-pct,
+.cone-label-row.row-gold .cone-row-desc {
+  color: var(--gold);
+}
+.cone-row-name {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1;
+}
+.cone-row-pct {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 36px;
+  letter-spacing: -1px;
+  color: var(--soft);
+  line-height: 1;
+}
+.cone-row-desc {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1;
+}
+/* Progressively brighten label colour for lower rows — use explicit modifier classes */
+.cone-label-row.row-mid .cone-row-name  { color: var(--muted); }
+.cone-label-row.row-mid .cone-row-pct   { color: var(--muted); }
+.cone-label-row.row-soft .cone-row-name { color: var(--soft); }
+.cone-label-row.row-soft .cone-row-pct  { color: var(--soft); }
+.cone-label-row.row-soft .cone-row-desc { color: var(--soft); }
+.cone-label-row.row-near .cone-row-name { color: var(--soft); }
+.cone-label-row.row-near .cone-row-pct  { color: var(--gold-lo); }
+.cone-label-row.row-near .cone-row-desc { color: var(--soft); }
 /* Right: quote card */
 .cone-right {
-  flex: 0 0 400px;
+  flex: 0 0 360px;
   display: flex;
   flex-direction: column;
   gap: 28px;
-  padding: 52px 48px;
+  padding: 44px 40px;
   background: var(--surface);
   border: 1px solid rgba(242,193,78,.35);
   border-top: 3px solid var(--gold);
   border-radius: 20px;
+  align-self: center;
 }
 .cone-quote-text {
   font-family: var(--body);
   font-weight: 600;
-  font-size: 32px;
+  font-size: 27px;
   line-height: 1.55;
   color: var(--text);
   font-style: italic;
@@ -955,7 +974,7 @@ html, body {
 .cone-quote-attr {
   font-family: var(--display);
   font-weight: 700;
-  font-size: 20px;
+  font-size: 18px;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--gold);
@@ -1169,7 +1188,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 32px;
+  padding: 56px 24px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 20px;
@@ -1188,9 +1207,9 @@ html, body {
 .skill-equal-text {
   font-family: var(--display);
   font-weight: 900;
-  font-size: 60px;
-  letter-spacing: -1.5px;
-  line-height: 1.1;
+  font-size: 46px;
+  letter-spacing: -1px;
+  line-height: 1.12;
   color: var(--soft);
   text-align: center;
   text-transform: uppercase;
@@ -2078,116 +2097,93 @@ html, body {
 
       <div class="slide-title" style="font-size:80px; margin-bottom:28px;">Cone of Learning</div>
 
-      <div class="cone-wrap" style="align-items:flex-start; padding-top:8px;">
+      <div class="cone-wrap" style="padding-top:8px;">
 
-        <!-- Triangle pyramid -->
+        <!-- Triangle pyramid — pure colour, no text inside -->
         <div class="cone-pyramid-area">
-
-          <!-- SVG triangle clipped into bands -->
-          <svg class="cone-pyramid-svg" viewBox="0 0 740 620" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <svg class="cone-pyramid-svg" viewBox="0 0 740 620" preserveAspectRatio="none" aria-hidden="true">
             <defs>
-              <!-- Clip path: the full triangle silhouette -->
               <clipPath id="triClip">
                 <polygon points="370,0 740,620 0,620"/>
               </clipPath>
             </defs>
 
-            <!-- Band fills, clipped to triangle. Heights (0-620) split 6 bands proportionally -->
-            <!-- Band 1: 0–103 (top ~16.7%) — darkest -->
-            <rect x="0" y="0" width="740" height="103" fill="#1A1A1A" clip-path="url(#triClip)"/>
-            <!-- Band 2: 103–207 -->
-            <rect x="0" y="103" width="740" height="104" fill="#1E1C17" clip-path="url(#triClip)"/>
-            <!-- Band 3: 207–310 -->
-            <rect x="0" y="207" width="740" height="103" fill="#252110" clip-path="url(#triClip)"/>
-            <!-- Band 4: 310–414 -->
-            <rect x="0" y="310" width="740" height="104" fill="#2E2710" clip-path="url(#triClip)"/>
-            <!-- Band 5: 414–517 -->
-            <rect x="0" y="414" width="740" height="103" fill="#3B3110" clip-path="url(#triClip)"/>
-            <!-- Band 6: 517–620 — fully gold -->
-            <rect x="0" y="517" width="740" height="103" fill="rgba(242,193,78,0.28)" clip-path="url(#triClip)"/>
+            <!-- Band fills (6 equal bands, bottom-to-top dark→gold) -->
+            <rect x="0" y="0"   width="740" height="103" fill="#1A1A1A"              clip-path="url(#triClip)"/>
+            <rect x="0" y="103" width="740" height="104" fill="#1E1C17"              clip-path="url(#triClip)"/>
+            <rect x="0" y="207" width="740" height="103" fill="#252110"              clip-path="url(#triClip)"/>
+            <rect x="0" y="310" width="740" height="104" fill="#2E2710"              clip-path="url(#triClip)"/>
+            <rect x="0" y="414" width="740" height="103" fill="#3B3110"              clip-path="url(#triClip)"/>
+            <rect x="0" y="517" width="740" height="103" fill="rgba(242,193,78,.28)" clip-path="url(#triClip)"/>
 
-            <!-- Hairline band dividers (horizontal, clipped) -->
+            <!-- Hairline band dividers -->
             <line x1="0" y1="103" x2="740" y2="103" stroke="rgba(242,193,78,.18)" stroke-width="1" clip-path="url(#triClip)"/>
             <line x1="0" y1="207" x2="740" y2="207" stroke="rgba(242,193,78,.18)" stroke-width="1" clip-path="url(#triClip)"/>
-            <line x1="0" y1="310" x2="740" y2="310" stroke="rgba(242,193,78,.2)" stroke-width="1" clip-path="url(#triClip)"/>
+            <line x1="0" y1="310" x2="740" y2="310" stroke="rgba(242,193,78,.20)" stroke-width="1" clip-path="url(#triClip)"/>
             <line x1="0" y1="414" x2="740" y2="414" stroke="rgba(242,193,78,.25)" stroke-width="1" clip-path="url(#triClip)"/>
             <line x1="0" y1="517" x2="740" y2="517" stroke="rgba(242,193,78,.35)" stroke-width="1" clip-path="url(#triClip)"/>
 
             <!-- Triangle outline -->
             <polygon points="370,2 738,618 2,618" fill="none" stroke="rgba(242,193,78,.5)" stroke-width="2" stroke-linejoin="round"/>
           </svg>
+        </div>
 
-          <!-- HTML text labels overlaid on each band -->
-          <div class="cone-band-labels">
-            <!-- Band 1: centre y = 51.5 (0+103)/2 -->
-            <div class="cone-band-row" style="top:38px; height:52px;">
-              <div class="cone-band-text" style="font-size:22px; color:var(--muted); letter-spacing:1px;">READING</div>
-            </div>
-            <!-- Band 2: centre y = 155 -->
-            <div class="cone-band-row" style="top:130px; height:58px;">
-              <div class="cone-band-text" style="font-size:22px; color:var(--muted); letter-spacing:1px;">HEARING WORDS</div>
-            </div>
-            <!-- Band 3: centre y = 258 -->
-            <div class="cone-band-row" style="top:228px; height:58px;">
-              <div class="cone-band-text" style="font-size:23px; color:var(--soft); letter-spacing:1px;">SEEING</div>
-            </div>
-            <!-- Band 4: centre y = 362 -->
-            <div class="cone-band-row" style="top:324px; height:64px;">
-              <div class="cone-band-text" style="font-size:21px; color:var(--soft); letter-spacing:0.5px; max-width:360px;">WATCHING A<br>DEMONSTRATION</div>
-            </div>
-            <!-- Band 5: centre y = 465 -->
-            <div class="cone-band-row" style="top:424px; height:66px;">
-              <div class="cone-band-text" style="font-size:19px; color:var(--text); letter-spacing:0.5px; max-width:400px;">PARTICIPATING IN A DISCUSSION<br>/ GIVING A TALK</div>
-            </div>
-            <!-- Band 6: centre y = 568 -->
-            <div class="cone-band-row" style="top:528px; height:72px;">
-              <div class="cone-band-text" style="font-size:23px; color:var(--gold); font-weight:900; letter-spacing:1px;">DOING THE REAL THING</div>
-            </div>
+        <!-- Right column — 6 label rows, one per band -->
+        <div class="cone-label-col">
+
+          <!-- Group tags -->
+          <span class="cone-group-tag tag-passive">Passive</span>
+          <span class="cone-group-tag tag-active">Active</span>
+
+          <!-- Divider between passive (top 4) and active (bottom 2) -->
+          <div class="cone-group-divider"></div>
+
+          <!-- Band 1: READING — 10% -->
+          <div class="cone-label-row">
+            <div class="cone-row-name">Reading</div>
+            <div class="cone-row-pct">10%</div>
+            <div class="cone-row-desc">of what we read</div>
           </div>
 
-          <!-- Right-side annotations: pct + descriptor -->
-          <div style="position:absolute; left:752px; top:0; width:290px; height:620px; display:flex; flex-direction:column;">
-            <!-- Each entry is positioned at the band midpoint -->
-            <div style="position:absolute; top:28px; display:flex; align-items:center; gap:10px;">
-              <span style="font-family:var(--display); font-weight:900; font-size:26px; color:var(--muted-2); min-width:52px; text-align:right;">10%</span>
-              <span style="font-family:var(--body); font-weight:600; font-size:17px; color:var(--muted); text-transform:uppercase; line-height:1.2;">of what we READ</span>
-            </div>
-            <div style="position:absolute; top:128px; display:flex; align-items:center; gap:10px;">
-              <span style="font-family:var(--display); font-weight:900; font-size:26px; color:var(--muted); min-width:52px; text-align:right;">20%</span>
-              <span style="font-family:var(--body); font-weight:600; font-size:17px; color:var(--muted); text-transform:uppercase; line-height:1.2;">of what we HEAR</span>
-            </div>
-            <div style="position:absolute; top:228px; display:flex; align-items:center; gap:10px;">
-              <span style="font-family:var(--display); font-weight:900; font-size:26px; color:var(--muted); min-width:52px; text-align:right;">30%</span>
-              <span style="font-family:var(--body); font-weight:600; font-size:17px; color:var(--soft); text-transform:uppercase; line-height:1.2;">of what we SEE</span>
-            </div>
-            <div style="position:absolute; top:330px; display:flex; align-items:center; gap:10px;">
-              <span style="font-family:var(--display); font-weight:900; font-size:26px; color:var(--soft); min-width:52px; text-align:right;">50%</span>
-              <span style="font-family:var(--body); font-weight:600; font-size:17px; color:var(--soft); text-transform:uppercase; line-height:1.2;">of what we SEE &amp; HEAR</span>
-            </div>
-            <div style="position:absolute; top:432px; display:flex; align-items:center; gap:10px;">
-              <span style="font-family:var(--display); font-weight:900; font-size:26px; color:var(--gold); min-width:52px; text-align:right;">70%</span>
-              <span style="font-family:var(--body); font-weight:600; font-size:17px; color:var(--soft); text-transform:uppercase; line-height:1.2;">of what we SAY</span>
-            </div>
-            <div style="position:absolute; top:536px; display:flex; align-items:center; gap:10px;">
-              <span style="font-family:var(--display); font-weight:900; font-size:28px; color:var(--gold-hi); min-width:52px; text-align:right;">90%</span>
-              <span style="font-family:var(--body); font-weight:700; font-size:17px; color:var(--gold); text-transform:uppercase; line-height:1.2;">of what we DO</span>
-            </div>
+          <!-- Band 2: HEARING WORDS — 20% -->
+          <div class="cone-label-row">
+            <div class="cone-row-name">Hearing Words</div>
+            <div class="cone-row-pct">20%</div>
+            <div class="cone-row-desc">of what we hear</div>
+          </div>
 
-            <!-- PASSIVE / ACTIVE bracket labels -->
-            <div style="position:absolute; right:-52px; top:0; height:310px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;">
-              <div style="width:3px; height:280px; background:rgba(242,193,78,.2); border-radius:2px;"></div>
-              <span style="font-family:var(--display); font-weight:700; font-size:13px; letter-spacing:3px; text-transform:uppercase; color:var(--muted-2); writing-mode:vertical-rl; transform:rotate(180deg); position:absolute; right:-24px; top:50%; transform:translateY(-50%) rotate(180deg);">PASSIVE</span>
-            </div>
-            <div style="position:absolute; right:-52px; top:310px; height:310px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;">
-              <div style="width:3px; height:280px; background:rgba(242,193,78,.4); border-radius:2px;"></div>
-              <span style="font-family:var(--display); font-weight:700; font-size:13px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); opacity:0.75; writing-mode:vertical-rl; position:absolute; right:-24px; top:50%; transform:translateY(-50%) rotate(180deg);">ACTIVE</span>
-            </div>
+          <!-- Band 3: SEEING — 30% -->
+          <div class="cone-label-row row-mid">
+            <div class="cone-row-name">Seeing</div>
+            <div class="cone-row-pct">30%</div>
+            <div class="cone-row-desc">of what we see</div>
+          </div>
+
+          <!-- Band 4: WATCHING A DEMONSTRATION — 50% -->
+          <div class="cone-label-row row-soft">
+            <div class="cone-row-name">Watching a Demonstration</div>
+            <div class="cone-row-pct">50%</div>
+            <div class="cone-row-desc">of what we see &amp; hear</div>
+          </div>
+
+          <!-- Band 5: PARTICIPATING / GIVING A TALK — 70% -->
+          <div class="cone-label-row row-near">
+            <div class="cone-row-name">Participating in a Discussion / Giving a Talk</div>
+            <div class="cone-row-pct">70%</div>
+            <div class="cone-row-desc">of what we say</div>
+          </div>
+
+          <!-- Band 6: DOING THE REAL THING — 90% (gold) -->
+          <div class="cone-label-row row-gold">
+            <div class="cone-row-name">Doing the Real Thing</div>
+            <div class="cone-row-pct" style="font-size:44px; color:var(--gold-hi); letter-spacing:-2px;">90%</div>
+            <div class="cone-row-desc">of what we do</div>
           </div>
 
         </div>
 
         <!-- Confucius quote card -->
-        <div class="cone-right" style="margin-top:20px;">
+        <div class="cone-right">
           <div class="cone-quote-text">"I see and I forget. I hear and I remember. I do and I understand."</div>
           <div class="cone-quote-attr">— Confucius</div>
         </div>
